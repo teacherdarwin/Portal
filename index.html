@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathClass LMS | Student & Faculty Portal</title>
+    <link rel="icon" type="image/png" href="NCC.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        :root{ --accent:#6366f1; --accent-dark:#4f46e5; --sidebar-bg:#0f172a; --canvas:#f8fafc;
+            --card-border:rgba(226,232,240,.8); --text-h:#0f172a; --text-p:#475569;
+            --radius-lg:16px; --radius-md:12px;
+            --shadow:0 10px 15px -3px rgba(0,0,0,.05),0 4px 6px -2px rgba(0,0,0,.02);
+            --success:#10b981; --success-dark:#059669;
+            --meet-blue:#1a73e8; --meet-blue-dark:#1557b0; --danger:#ef4444; }
+        [data-theme="dark"]{ --canvas:#0b1220; --card-border:#243147; --text-h:#e6edf7; --text-p:#8fa1b8; }
+        [data-theme="dark"] body{ background:var(--canvas); }
+        [data-theme="dark"] .auth-wrapper{ background:#0f172a; }
+        [data-theme="dark"] .card,[data-theme="dark"] .stat-card,[data-theme="dark"] .list-item,
+        [data-theme="dark"] .ann-item,[data-theme="dark"] .instr-box,[data-theme="dark"] .grade-tile,
+        [data-theme="dark"] .subject-card{ background:#121a2b; }
+        [data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{ background:#0e1626; border-color:#243147; color:var(--text-h); }
+        [data-theme="dark"] .main-content{ background:linear-gradient(180deg,#0b1220 0%,#0e1626 100%); }
+        [data-theme="dark"] .badge-pending{ background:#1e293b; color:#94a3b8; }
+        [data-theme="dark"] .badge-done,[data-theme="dark"] .btn-submit,[data-theme="dark"] .dl-open{ background:rgba(16,185,129,.12); color:#34d399; }
+        [data-theme="dark"] th,[data-theme="dark"] td{ border-bottom-color:#1e293b; }
+        [data-theme="dark"] .file-input-wrapper{ background:#0e1626; }
+        [data-theme="dark"] .btn-locked,[data-theme="dark"] .dl-closed{ background:rgba(239,68,68,.12); color:#fca5a5; }
+        [data-theme="dark"] .btn-ghost{ background:#1e293b; color:#94a3b8; }
+        [data-theme="dark"] .dl-soon{ background:rgba(217,119,6,.14); color:#fcd34d; }
+        [data-theme="dark"] .sec-chip{ background:rgba(99,102,241,.15); color:#a5b4fc; }
+        *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+        body{ font-family:'Plus Jakarta Sans',sans-serif; background:var(--canvas); color:var(--text-h); height:100vh; overflow:hidden; }
+
+        #boot-overlay{ position:fixed; inset:0; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:var(--canvas); transition:opacity .4s, visibility .4s; }
+        #boot-overlay.done{ opacity:0; visibility:hidden; pointer-events:none; }
+        .boot-ring{ width:46px; height:46px; border-radius:50%; border:4px solid var(--card-border); border-top-color:var(--accent); animation:spin .8s linear infinite; }
+        .boot-label{ font-weight:700; font-size:.9rem; color:var(--text-p); }
+        @keyframes spin{ to{ transform:rotate(360deg);} }
+        #ready-pill{ position:fixed; top:14px; right:14px; z-index:1500; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:99px; font-size:.72rem; font-weight:800; background:#f1f5f9; color:#64748b; border:1px solid var(--card-border); box-shadow:var(--shadow); transition:.3s; pointer-events:none; }
+        #ready-pill .r-dot{ width:8px; height:8px; border-radius:50%; background:#d97706; animation:pulse 1.4s infinite; }
+        #ready-pill.ready{ background:#ecfdf5; color:#059669; border-color:rgba(16,185,129,.3); }
+        #ready-pill.ready .r-dot{ background:var(--success); animation:none; }
+        #ready-pill.error{ background:#fee2e2; color:#b91c1c; }
+        #ready-pill.error .r-dot{ background:var(--danger); animation:none; }
+        @keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(217,119,6,.4);} 70%{ box-shadow:0 0 0 7px rgba(217,119,6,0);} 100%{ box-shadow:0 0 0 0 rgba(217,119,6,0);} }
+        @media (max-width:768px){ #ready-pill{ top:auto; bottom:14px; right:14px; } }
+
+        .skel{ height:14px; border-radius:6px; margin:12px 0; background:linear-gradient(90deg,var(--card-border) 25%,transparent 50%,var(--card-border) 75%); background-size:200% 100%; animation:shimmer 1.1s infinite; }
+        .skel.card-skel{ height:86px; border-radius:var(--radius-md); }
+        @keyframes shimmer{ to{ background-position:-200% 0; } }
+
+        .auth-wrapper{ display:flex; min-height:100vh; background:#fff; }
+        .auth-side-brand{ flex:1.2; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; padding:60px; position:relative; overflow:hidden; background:#000; }
+        .brand-bg-overlay{ position:absolute; top:-10%; left:-10%; width:120%; height:120%; background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),url("NCC.jpg"); background-size:cover; background-position:center; filter:blur(8px); animation:panBackground 8s infinite alternate ease-in-out; z-index:1; }
+        @keyframes panBackground{ 0%{ transform:scale(1.1) translateX(-5%);} 100%{ transform:scale(1.1) translateX(0%);} }
+        .brand-content{ position:relative; z-index:2; text-align:center; text-shadow:0 4px 15px rgba(0,0,0,.5); }
+        .brand-logo-container{ width:160px; height:160px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; }
+        .brand-logo-container img{ max-width:100%; max-height:100%; object-fit:contain; filter:drop-shadow(0 0 15px rgba(255,255,255,.2)); transition:transform .4s; }
+        .brand-logo-container:hover img{ transform:scale(1.1) translateY(-5px); }
+        .auth-side-form{ flex:1; display:flex; align-items:center; justify-content:center; padding:40px; position:relative; }
+        .auth-card{ width:100%; max-width:420px; }
+        .auth-card h2{ font-size:2rem; font-weight:800; margin-bottom:8px; }
+        .auth-card p.subtitle{ color:var(--text-p); margin-bottom:32px; font-size:.95rem; }
+        .input-field{ margin-bottom:18px; }
+        .input-field label{ display:block; font-weight:600; font-size:.85rem; margin-bottom:8px; }
+        .input-wrapper{ position:relative; }
+        .input-wrapper i{ position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94a3b8; }
+        input,select,textarea{ width:100%; padding:14px 16px 14px 48px; border:1.5px solid var(--card-border); border-radius:var(--radius-md); font-size:15px; transition:.3s; background:#fff; font-family:inherit; outline:none; }
+        select,textarea{ padding-left:16px; }
+        .input-wrapper select{ padding-left:48px; appearance:auto; cursor:pointer; }
+        textarea{ resize:vertical; min-height:90px; }
+        input:focus,select:focus,textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 4px rgba(99,102,241,.1); }
+
+        .btn{ padding:14px 20px; border-radius:var(--radius-md); border:none; font-weight:700; font-size:.95rem; cursor:pointer; transition:.25s; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; font-family:inherit; }
+        .btn:active{ transform:scale(.97); }
+        .btn-primary{ background:var(--accent); color:#fff; }
+        .btn-primary:hover{ background:var(--accent-dark); transform:translateY(-2px); }
+        .btn-success{ background:var(--success); color:#fff; }
+        .btn-success:hover{ background:var(--success-dark); }
+        .btn-meet{ background:var(--meet-blue); color:#fff; margin-top:24px; box-shadow:0 4px 12px rgba(26,115,232,.25); width:100%; }
+        .btn-meet:hover{ background:var(--meet-blue-dark); transform:translateY(-2px); }
+        .btn-danger-icon{ background:transparent; color:var(--danger); border:1px solid rgba(239,68,68,.3); padding:8px 12px; }
+        .btn-danger-icon:hover{ background:rgba(239,68,68,.08); }
+        .btn-ghost{ background:#f1f5f9; color:var(--text-p); }
+        .btn-ghost:hover{ background:#e2e8f0; }
+        .btn-locked{ background:#fee2e2; color:#b91c1c; cursor:not-allowed; border:1px solid rgba(185,28,28,.25); min-height:46px; white-space:nowrap; }
+        .btn-submit{ background:#ecfdf5; color:var(--success-dark); border:1.5px solid rgba(16,185,129,.35); min-height:46px; white-space:nowrap; }
+        .btn-submit:hover{ background:var(--success); color:#fff; box-shadow:0 6px 14px rgba(16,185,129,.3); }
+        .btn.is-loading{ position:relative; pointer-events:none; opacity:.75; }
+        .btn.is-loading::before{ content:""; width:14px; height:14px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .7s linear infinite; }
+
+        .status-badge{ padding:6px 12px; font-size:.75rem; font-weight:700; border-radius:30px; display:inline-flex; align-items:center; gap:4px; }
+        .badge-pending{ background:#f1f5f9; color:#64748b; }
+        .badge-done{ background:#ecfdf5; color:#10b981; border:1px solid rgba(16,185,129,.2); }
+
+        .sec-picker{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+        .sec-pick{ display:inline-flex; align-items:center; gap:6px; border:1.5px solid var(--card-border); border-radius:99px; padding:7px 13px; font-size:.78rem; font-weight:700; cursor:pointer; user-select:none; transition:.2s; color:var(--text-p); }
+        .sec-pick input{ width:14px; height:14px; padding:0; margin:0; accent-color:var(--accent); cursor:pointer; }
+        .sec-pick.on{ border-color:var(--accent); background:rgba(99,102,241,.08); color:var(--accent); }
+
+        .role-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+        .role-option{ border:1.5px solid var(--card-border); border-radius:var(--radius-md); padding:12px; text-align:center; cursor:pointer; font-weight:600; font-size:.85rem; transition:.2s; }
+        .role-option i{ display:block; font-size:1.2rem; margin-bottom:6px; color:var(--text-p); }
+        .role-option.selected{ border-color:var(--accent); background:rgba(99,102,241,.06); color:var(--accent); }
+        .role-option.selected i{ color:var(--accent); }
+        .remember-me{ display:flex; align-items:center; gap:8px; cursor:pointer; font-size:.85rem; color:var(--text-p); margin:-4px 0 18px; }
+        .remember-me input{ width:16px; height:16px; padding:0; accent-color:var(--accent); }
+        .strength-bars{ display:flex; gap:5px; margin-top:10px; }
+        .strength-bars i{ height:5px; flex:1; border-radius:99px; background:var(--card-border); transition:background .3s; }
+        .strength-label{ font-size:.72rem; color:var(--text-p); margin-top:5px; }
+        .input-wrapper .eye-toggle{ position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:0; color:#94a3b8; cursor:pointer; padding:6px; display:flex; font-size:.95rem; }
+        .input-wrapper:has(.eye-toggle) input{ padding-right:44px; }
+        .hidden{ display:none !important; }
+
+        .portal-layout{ display:flex; height:100vh; width:100%; }
+        .sidebar{ width:280px; background:var(--sidebar-bg); padding:32px 20px; display:flex; flex-direction:column; z-index:10; flex-shrink:0; }
+        .sidebar-brand{ display:flex; align-items:center; gap:12px; margin-bottom:40px; padding:0 12px; }
+        .sidebar-brand img{ height:32px; width:auto; object-fit:contain; }
+        .sidebar-brand span{ color:#fff; font-weight:800; font-size:1.25rem; }
+        .mobile-nav{ display:none; background:var(--sidebar-bg); padding:12px 20px; justify-content:space-between; align-items:center; width:100%; position:sticky; top:0; z-index:100; }
+        .mobile-nav-menu{ display:none; background:#1e293b; padding:10px; position:absolute; top:56px; left:0; width:100%; box-shadow:var(--shadow); z-index:99; }
+        .mobile-nav-menu.show{ display:block; }
+        .nav-link{ display:flex; align-items:center; gap:12px; width:100%; padding:14px 16px; border:none; background:transparent; text-align:left; color:#94a3b8; font-weight:500; cursor:pointer; border-radius:var(--radius-md); transition:.2s; margin-bottom:4px; font-family:inherit; font-size:.95rem; }
+        .nav-link:hover{ color:#fff; background:rgba(255,255,255,.05); }
+        .nav-link.active{ background:var(--accent); color:#fff; }
+        .main-content{ flex:1; padding:48px; overflow-y:auto; background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%); }
+        .card{ background:#fff; border:1px solid var(--card-border); border-radius:var(--radius-lg); padding:28px; box-shadow:var(--shadow); }
+        .stat-grid{ display:grid; gap:20px; margin-bottom:32px; }
+        .stat-grid.cols-2{ grid-template-columns:repeat(2,1fr); }
+        .stat-grid.cols-3{ grid-template-columns:repeat(3,1fr); }
+        .stat-card{ background:#fff; padding:20px; border-radius:var(--radius-md); border:1px solid var(--card-border); transition:.25s; }
+        .stat-card:hover{ transform:translateY(-3px); box-shadow:0 8px 18px -6px rgba(15,23,42,.12); }
+        .stat-card h4,.stat-card h2{ font-size:1.8rem; margin-top:4px; font-weight:800; color:var(--accent); }
+
+        /* ===== ✚ v9 SUBJECT CARDS ===== */
+        .subject-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px; }
+        .subject-card{ background:#fff; border:1px solid var(--card-border); border-radius:var(--radius-lg); overflow:hidden; cursor:pointer; transition:.25s; display:flex; flex-direction:column; }
+        .subject-card:hover{ transform:translateY(-4px); box-shadow:0 14px 28px -10px rgba(15,23,42,.18); border-color:var(--accent); }
+        .subject-thumb{ height:130px; width:100%; object-fit:cover; display:block; background:var(--card-border); }
+        .subject-thumb-div{ height:130px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:2.4rem; font-weight:800; }
+        .subject-body{ padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; flex:1; }
+        .subject-body h4{ font-weight:800; font-size:1.05rem; }
+        .subject-body .desc{ font-size:.8rem; color:var(--text-p); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .subject-code{ font-family:monospace; font-size:.72rem; font-weight:700; letter-spacing:1px; }
+        .subject-teacher{ font-size:.72rem; color:#94a3b8; display:flex; align-items:center; gap:5px; margin-top:auto; padding-top:8px; }
+        .subject-actions{ display:flex; gap:8px; padding:0 18px 16px; }
+        .enrolled-pill{ position:absolute; top:10px; right:10px; background:var(--success); color:#fff; font-size:.68rem; font-weight:800; padding:4px 10px; border-radius:99px; display:flex; align-items:center; gap:4px; }
+        .subject-card-wrap{ position:relative; }
+
+        .list-item{ display:flex; align-items:center; justify-content:space-between; padding:20px; border-radius:var(--radius-md); border:1px solid var(--card-border); margin-bottom:12px; background:#fff; transition:.25s; gap:16px; }
+        .list-item:hover{ border-color:#cbd5e1; transform:translateY(-2px); box-shadow:0 6px 16px -8px rgba(15,23,42,.12); }
+        .resource-info{ display:flex; align-items:center; gap:16px; flex:1; min-width:0; }
+        .resource-info h4{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .resource-icon{ width:44px; height:44px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.2rem; transition:.25s; }
+        .list-item:hover .resource-icon{ transform:scale(1.08) rotate(-3deg); }
+        .icon-module{ background:#edf2ff; color:#4c6ef5; }
+        .icon-assignment{ background:#fff0f6; color:#d6336c; }
+        .action-group{ display:flex; align-items:center; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+        .action-group .btn{ padding:10px 16px; }
+        .instr-box{ background:#f8fafc; border:1px solid var(--card-border); border-left:4px solid var(--accent); border-radius:10px; padding:12px 14px; margin-top:10px; font-size:.85rem; color:var(--text-p); white-space:pre-wrap; }
+        .instr-box strong{ color:var(--text-h); display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:.78rem; text-transform:uppercase; letter-spacing:.5px; }
+        .dl-badge{ padding:5px 12px; border-radius:30px; font-size:.72rem; font-weight:700; display:inline-flex; align-items:center; gap:5px; margin-top:8px; }
+        .dl-open{ background:#ecfdf5; color:#059669; }
+        .dl-soon{ background:#fef3c7; color:#b45309; }
+        .dl-closed{ background:#fee2e2; color:#b91c1c; }
+        .visible-chip{ display:inline-flex; align-items:center; gap:4px; background:#edf2ff; color:#4c6ef5; border-radius:20px; padding:3px 10px; font-size:.7rem; font-weight:700; margin:2px; }
+
+        .table-responsive{ width:100%; overflow-x:auto; }
+        table{ width:100%; border-collapse:collapse; min-width:600px; }
+        th{ text-align:left; padding:15px; color:var(--text-p); font-size:.85rem; font-weight:600; border-bottom:2px solid #f1f5f9; }
+        td{ padding:15px; border-bottom:1px solid #f1f5f9; font-size:15px; }
+        .type-pill{ background:#edf2ff; color:#4c6ef5; padding:6px 12px; border-radius:30px; font-size:.75rem; font-weight:700; text-transform:capitalize; }
+        .type-pill.assignment{ background:#fff0f6; color:#d6336c; }
+        .dl-cell{ font-size:.8rem; color:var(--text-p); }
+        .dl-cell.overdue{ color:var(--danger); font-weight:700; }
+        .sec-chip{ display:inline-flex; align-items:center; gap:4px; background:#edf2ff; color:#4c6ef5; border-radius:20px; padding:3px 10px; font-size:.7rem; font-weight:700; margin:2px; text-decoration:none; transition:.2s; }
+        .sec-chip:hover{ background:#dbe4ff; transform:translateY(-1px); }
+
+        .ann-item{ border:1px solid var(--card-border); border-radius:var(--radius-md); padding:18px 20px; margin-bottom:12px; background:#fff; transition:.25s; }
+        .ann-item:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+        .ann-item h4{ font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .ann-item p{ color:var(--text-p); font-size:.92rem; white-space:pre-wrap; }
+        .ann-meta{ font-size:.75rem; color:#94a3b8; margin-top:10px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+        .ann-icon{ width:38px; height:38px; border-radius:10px; background:#fff7ed; color:#ea580c; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ann-empty{ text-align:center; color:var(--text-p); font-size:.9rem; padding:20px; }
+
+        .grade-card-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+        .grade-tile{ border:1px solid var(--card-border); border-radius:var(--radius-md); padding:18px; text-align:center; background:#fff; transition:.25s; }
+        .grade-tile:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+        .grade-tile .term{ font-size:.75rem; font-weight:700; color:var(--text-p); text-transform:uppercase; letter-spacing:.5px; }
+        .grade-tile .val{ font-size:2.2rem; font-weight:800; color:var(--accent); margin-top:4px; }
+        .grade-tile .rem{ font-size:.72rem; color:#94a3b8; margin-top:4px; min-height:1em; }
+        .gb-form{ display:grid; grid-template-columns:1fr 1.4fr 1fr .8fr 1.4fr auto; gap:10px; align-items:end; margin-bottom:8px; }
+        .gb-form .input-field{ margin-bottom:0; }
+
+        .modal-overlay{ position:fixed; inset:0; background:rgba(15,23,42,.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+        .file-input-wrapper{ border:1.5px dashed var(--card-border); padding:20px; border-radius:var(--radius-md); text-align:center; background:#f8fafc; margin-bottom:18px; transition:.2s; }
+        .file-input-wrapper:hover{ border-color:var(--accent); }
+        .toast{ position:fixed; left:50%; bottom:24px; transform:translate(-50%,16px); opacity:0; pointer-events:none; z-index:1500; background:#0f172a; color:#fff; padding:12px 20px; border-radius:12px; font-size:.9rem; font-weight:600; box-shadow:var(--shadow); transition:.3s; max-width:90vw; text-align:center; }
+        .toast.show{ opacity:1; transform:translate(-50%,0); }
+        .toast.success{ background:var(--success); }
+        .toast.error{ background:var(--danger); }
+        .theme-toggle{ width:38px; height:38px; border-radius:10px; cursor:pointer; border:1px solid var(--card-border); background:transparent; color:var(--text-p); display:grid; place-items:center; font-size:.95rem; transition:.2s; flex-shrink:0; }
+        .theme-toggle:hover{ color:var(--accent); border-color:var(--accent); }
+        #auth-theme-toggle{ position:absolute; top:20px; right:20px; }
+        .subject-banner{ display:flex; align-items:center; gap:14px; margin-bottom:28px; background:#fff; border:1px solid var(--card-border); border-radius:var(--radius-lg); padding:14px 18px; box-shadow:var(--shadow); }
+        .subject-banner .sb-thumb{ width:52px; height:52px; border-radius:12px; object-fit:cover; flex-shrink:0; }
+        .color-dots{ display:flex; gap:8px; margin-bottom:14px; }
+        .color-dot{ width:28px; height:28px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:.2s; }
+        .color-dot.on{ border-color:var(--text-h); transform:scale(1.15); }
+        .roster-item{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border:1px solid var(--card-border); border-radius:10px; margin-bottom:8px; font-size:.9rem; }
+
+        @media (prefers-reduced-motion:reduce){ *,*::before,*::after{ animation:none !important; transition:none !important; } }
+        @media (max-width:1024px){ .main-content{ padding:32px; } .gb-form{ grid-template-columns:repeat(2,1fr); } }
+        @media (max-width:768px){
+            body{ overflow:auto; height:auto; min-height:100vh; }
+            .auth-wrapper{ flex-direction:column; }
+            .auth-side-brand{ padding:40px 20px; flex:none; }
+            .auth-side-form{ padding:32px 16px; }
+            .brand-logo-container{ width:100px; height:100px; margin-bottom:16px; }
+            .auth-card h2{ font-size:1.6rem; }
+            .portal-layout{ flex-direction:column; height:auto; min-height:100vh; }
+            .sidebar{ display:none; }
+            .mobile-nav{ display:flex; position:relative; }
+            .main-content{ padding:20px 14px; }
+            .stat-grid.cols-2,.stat-grid.cols-3{ grid-template-columns:1fr; gap:12px; margin-bottom:20px; }
+            .card{ padding:18px; }
+            .list-item{ flex-direction:column; align-items:stretch; gap:12px; padding:16px; }
+            .action-group{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+            .action-group .btn{ width:100%; min-height:46px; font-size:.85rem; padding:10px 8px; }
+            .action-group .btn:only-child{ grid-column:1 / -1; }
+            .gb-form{ grid-template-columns:1fr; }
+            #auth-theme-toggle{ top:12px; right:12px; }
+            .subject-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+            .subject-thumb,.subject-thumb-div{ height:90px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="boot-overlay">
+    <div class="boot-ring"></div>
+    <div class="boot-label" id="boot-label">Loading MathClass LMS…</div>
+</div>
+<div id="ready-pill" aria-live="polite"><span class="r-dot"></span><span id="ready-text">Syncing…</span></div>
+
+<!-- ============================ AUTH ============================ -->
+<div id="login-section" class="auth-wrapper">
+    <div class="auth-side-brand">
+        <div class="brand-bg-overlay"></div>
+        <div class="brand-content animate__animated animate__fadeIn">
+            <div class="brand-logo-container"><img src="NCC.png" alt="NCC Logo"></div>
+            <h1>Teacher Darwin Class</h1>
+            <p>Where Mathematics turns to Life</p>
+        </div>
+    </div>
+    <div class="auth-side-form">
+        <button id="auth-theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+        <div id="login-form" class="auth-card animate__animated animate__fadeInRight">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Log in to access your LMS.</p>
+            <div class="input-field">
+                <label>Email Address</label>
+                <div class="input-wrapper"><i class="fas fa-envelope"></i><input type="email" id="login-email" placeholder="name@gmail.com"></div>
+            </div>
+            <div class="input-field">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i><input type="password" id="login-password" placeholder="••••••••">
+                    <button type="button" class="eye-toggle" data-eye="login-password" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                </div>
+            </div>
+            <label class="remember-me"><input type="checkbox" id="remember-me"> Remember me</label>
+            <button class="btn btn-primary" id="signin-btn" onclick="signIn()"><span>Sign In</span><i class="fas fa-arrow-right"></i></button>
+            <p style="text-align:center; margin-top:24px; font-size:14px; color:var(--text-p);">
+                New here? <a href="#" onclick="toggleAuth('register'); return false;" style="color:var(--accent); font-weight:700; text-decoration:none;">Create Account</a>
+                &nbsp;·&nbsp;<a href="#" onclick="showForgot(); return false;" style="color:var(--accent); font-weight:700; text-decoration:none;">Forgot password?</a>
+            </p>
+        </div>
+
+        <div id="register-form" class="auth-card hidden animate__animated animate__fadeInRight">
+            <h2>Join the Class</h2>
+            <p class="subtitle">Create your profile.</p>
+            <div class="input-field">
+                <label>I am a…</label>
+                <div class="role-row">
+                    <div class="role-option selected" data-role="student" onclick="pickRole('student')"><i class="fas fa-user-graduate"></i>Student</div>
+                    <div class="role-option" data-role="teacher" onclick="pickRole('teacher')"><i class="fas fa-chalkboard-user"></i>Teacher</div>
+                </div>
+            </div>
+            <div class="input-field">
+                <label>Full Name</label>
+                <div class="input-wrapper"><i class="fas fa-user"></i><input type="text" id="reg-username" placeholder="Juan Dela Cruz"></div>
+            </div>
+            <div class="input-field" id="sid-field">
+                <label>Student ID</label>
+                <div class="input-wrapper"><i class="fas fa-id-card"></i><input type="text" id="reg-id" placeholder="Student Number"></div>
+            </div>
+            <div class="input-field" id="section-field">
+                <label>Section</label>
+                <div class="input-wrapper"><i class="fas fa-users-rectangle"></i><select id="reg-section"></select></div>
+            </div>
+            <div class="input-field">
+                <label>Email</label>
+                <div class="input-wrapper"><i class="fas fa-at"></i><input type="email" id="reg-email" placeholder="email@gmail.com"></div>
+            </div>
+            <div class="input-field">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-key"></i><input type="password" id="reg-password" placeholder="••••••••">
+                    <button type="button" class="eye-toggle" data-eye="reg-password" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="strength-bars" id="strength-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="strength-label" id="strength-label">Password strength</div>
+            </div>
+            <div class="input-field hidden" id="teacher-code-field">
+                <label>Faculty Access Code</label>
+                <div class="input-wrapper"><i class="fas fa-shield-halved"></i><input type="password" id="reg-teacher-code" placeholder="Provided by the school"></div>
+            </div>
+            <button class="btn btn-primary" id="signup-btn" onclick="signUp()">Initialize Account</button>
+            <p style="text-align:center; margin-top:24px; font-size:14px;"><a href="#" onclick="toggleAuth('login'); return false;" style="color:var(--accent); font-weight:700; text-decoration:none;">Back to Sign In</a></p>
+        </div>
+
+        <div id="forgot-form" class="auth-card hidden animate__animated animate__fadeInRight">
+            <h2>Reset Password</h2>
+            <p class="subtitle">Enter your email and we'll send you a reset link.</p>
+            <div class="input-field">
+                <label>Email Address</label>
+                <div class="input-wrapper"><i class="fas fa-envelope"></i><input type="email" id="forgot-email" placeholder="name@gmail.com"></div>
+            </div>
+            <button id="forgot-submit" class="btn btn-primary" onclick="sendReset()"><span>Send Reset Link</span></button>
+            <p style="text-align:center; margin-top:24px; font-size:14px;"><a href="#" onclick="closeForgot(); return false;" style="color:var(--accent); font-weight:700; text-decoration:none;">Back to Sign In</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- ============================ MOBILE NAVS ============================ -->
+<div id="mobile-navigation-bar" class="mobile-nav hidden">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="NCC.png" alt="Logo" height="28" width="auto">
+        <span style="color:#fff; font-weight:800; font-size:1.1rem;">MathClass LMS</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+        <button onclick="toggleMobileMenu()" aria-label="Menu" style="background:transparent; border:none; color:#fff; font-size:1.3rem; cursor:pointer; padding:6px;"><i class="fas fa-bars" id="hamburger-icon"></i></button>
+    </div>
+    <div id="mobile-menu-student" class="mobile-nav-menu">
+        <button class="nav-link" id="m-nav-subjects" onclick="showTab('subjects'); toggleMobileMenu();"><i class="fas fa-shapes"></i> Subjects</button>
+        <button class="nav-link" id="m-nav-dashboard" onclick="showTab('dashboard'); toggleMobileMenu();"><i class="fas fa-house-chimney"></i> Dashboard</button>
+        <button class="nav-link" id="m-nav-modules" onclick="showTab('modules'); toggleMobileMenu();"><i class="fas fa-book-open"></i> Curriculum</button>
+        <button class="nav-link" id="m-nav-assignments" onclick="showTab('assignments'); toggleMobileMenu();"><i class="fas fa-clipboard-list"></i> Assignments</button>
+        <button class="nav-link" id="m-nav-grades" onclick="showTab('grades'); toggleMobileMenu();"><i class="fas fa-graduation-cap"></i> My Grades</button>
+        <button class="nav-link" style="color:#ef4444; margin-top:10px; border-top:1px solid rgba(255,255,255,.1); padding-top:14px;" onclick="signOut()"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
+    </div>
+    <div id="mobile-menu-teacher" class="mobile-nav-menu">
+        <button class="nav-link" id="tm-nav-subjects" onclick="showTabT('subjects'); toggleMobileMenu();"><i class="fas fa-shapes"></i> My Subjects</button>
+        <button class="nav-link" id="tm-nav-overview" onclick="showTabT('overview'); toggleMobileMenu();"><i class="fas fa-house-chimney"></i> Overview</button>
+        <button class="nav-link" id="tm-nav-resources" onclick="showTabT('resources'); toggleMobileMenu();"><i class="fas fa-book-open"></i> Resources</button>
+        <button class="nav-link" id="tm-nav-announcements" onclick="showTabT('announcements'); toggleMobileMenu();"><i class="fas fa-bullhorn"></i> Announcements</button>
+        <button class="nav-link" id="tm-nav-gradebook" onclick="showTabT('gradebook'); toggleMobileMenu();"><i class="fas fa-graduation-cap"></i> Term Grades</button>
+        <button class="nav-link" style="color:#ef4444; margin-top:10px; border-top:1px solid rgba(255,255,255,.1); padding-top:14px;" onclick="signOut()"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
+    </div>
+</div>
+
+<!-- ============================ STUDENT PORTAL ============================ -->
+<div id="portal-student" class="portal-layout hidden">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><img src="NCC.png" alt="Logo"><span>MathClass LMS</span></div>
+        <nav style="flex:1">
+            <button class="nav-link active" id="nav-subjects" onclick="showTab('subjects')"><i class="fas fa-shapes"></i> Subjects</button>
+            <button class="nav-link" id="nav-dashboard" onclick="showTab('dashboard')"><i class="fas fa-house-chimney"></i> Dashboard</button>
+            <button class="nav-link" id="nav-modules" onclick="showTab('modules')"><i class="fas fa-book-open"></i> Curriculum</button>
+            <button class="nav-link" id="nav-assignments" onclick="showTab('assignments')"><i class="fas fa-clipboard-list"></i> Assignments</button>
+            <button class="nav-link" id="nav-grades" onclick="showTab('grades')"><i class="fas fa-graduation-cap"></i> My Grades</button>
+        </nav>
+        <div style="padding-top:20px; border-top:1px solid rgba(255,255,255,.1);">
+            <div style="margin-bottom:20px; padding:0 12px;">
+                <p id="display-name" style="color:#fff; font-weight:700; font-size:.9rem;"></p>
+                <p id="display-id" style="color:#64748b; font-size:.75rem;"></p>
+            </div>
+            <button class="theme-toggle" data-theme-toggle style="width:100%; justify-content:center; margin-bottom:8px; border-color:rgba(255,255,255,.15); color:#94a3b8;"><i class="fas fa-moon"></i>&nbsp;Theme</button>
+            <button class="nav-link" style="color:#ef4444" onclick="signOut()"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header style="margin-bottom:36px;">
+            <span style="color:var(--accent); font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:1px;">LMS v9.0</span>
+            <h2 id="tab-title" style="font-size:2.3rem; font-weight:800; letter-spacing:-1px;">My Subjects</h2>
+        </header>
+
+        <!-- ✚ v9 SUBJECTS -->
+        <div id="tab-subjects" class="tab-content">
+            <div class="card" style="margin-bottom:24px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <i class="fas fa-key" style="color:var(--accent); font-size:1.2rem;"></i>
+                <input type="text" id="enroll-code" placeholder="Enter enrollment code from your teacher (e.g. MATH-4F2A)" style="max-width:380px; text-transform:uppercase;">
+                <button class="btn btn-primary" id="enroll-btn" onclick="enrollWithCode()"><i class="fas fa-plus"></i> Enroll</button>
+            </div>
+            <div id="subject-grid" class="subject-grid"><div class="skel card-skel"></div></div>
+        </div>
+
+        <div id="tab-dashboard" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-student"></div>
+            <div class="stat-grid cols-2">
+                <div class="stat-card"><span>Active Modules</span><h4 id="stat-modules">--</h4></div>
+                <div class="stat-card"><span>Pending Tasks</span><h4 id="stat-assignments">--</h4></div>
+            </div>
+            <div class="card" style="margin-bottom:32px;">
+                <h3 style="margin-bottom:16px;"><i class="fas fa-bullhorn" style="color:#ea580c; margin-right:8px;"></i>Announcements</h3>
+                <div id="student-announcements"><div class="skel card-skel"></div></div>
+            </div>
+            <div class="card">
+                <h3>Status Report</h3>
+                <p id="welcome-msg" style="color:var(--text-p); margin-top:10px;">Synchronizing with classroom server...</p>
+                <a href="https://meet.google.com/qoj-ijvf-otf" target="_blank" rel="noopener noreferrer" class="btn btn-meet"><i class="fas fa-video"></i><span>Join Online Class</span></a>
+            </div>
+        </div>
+
+        <div id="tab-modules" class="tab-content hidden"><div class="subject-banner" id="subject-banner-modules"></div><div class="card"><div id="modules-container"><div class="skel card-skel"></div></div></div></div>
+        <div id="tab-assignments" class="tab-content hidden"><div class="subject-banner" id="subject-banner-assignments"></div><div class="card"><div id="assignments-container"><div class="skel card-skel"></div></div></div></div>
+
+        <div id="tab-grades" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-grades"></div>
+            <div class="card">
+                <h3 style="margin-bottom:18px;"><i class="fas fa-graduation-cap" style="color:var(--accent); margin-right:8px;"></i>My Term Grades</h3>
+                <div id="grades-container"><div class="skel card-skel"></div></div>
+                <p style="font-size:.75rem; color:#94a3b8; margin-top:18px;"><i class="fas fa-lock"></i> Only you can see your grades.</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ============================ TEACHER PORTAL ============================ -->
+<div id="portal-teacher" class="portal-layout hidden">
+    <aside class="sidebar">
+        <div class="sidebar-brand"><img src="NCC.png" alt="Logo"><span>MathClass LMS</span></div>
+        <nav style="flex:1">
+            <button class="nav-link active" id="nav-subjects-t" onclick="showTabT('subjects')"><i class="fas fa-shapes"></i> My Subjects</button>
+            <button class="nav-link" id="nav-overview" onclick="showTabT('overview')"><i class="fas fa-house-chimney"></i> Overview</button>
+            <button class="nav-link" id="nav-resources" onclick="showTabT('resources')"><i class="fas fa-book-open"></i> Resources</button>
+            <button class="nav-link" id="nav-announcements" onclick="showTabT('announcements')"><i class="fas fa-bullhorn"></i> Announcements</button>
+            <button class="nav-link" id="nav-gradebook" onclick="showTabT('gradebook')"><i class="fas fa-graduation-cap"></i> Term Grades</button>
+        </nav>
+        <div style="padding-top:20px; border-top:1px solid rgba(255,255,255,.1);">
+            <div style="margin-bottom:20px; padding:0 12px;">
+                <p id="teacher-name" style="color:#fff; font-weight:700; font-size:.9rem;"></p>
+                <p style="color:#64748b; font-size:.75rem;">Faculty Console</p>
+            </div>
+            <button class="theme-toggle" data-theme-toggle style="width:100%; justify-content:center; margin-bottom:8px; border-color:rgba(255,255,255,.15); color:#94a3b8;"><i class="fas fa-moon"></i>&nbsp;Theme</button>
+            <button class="nav-link" style="color:#ef4444" onclick="signOut()"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:36px; gap:16px; flex-wrap:wrap;">
+            <div>
+                <span style="color:var(--accent); font-weight:700; font-size:.8rem; text-transform:uppercase;">MathClass LMS</span>
+                <h1 id="tab-title-t" style="font-size:2.2rem; font-weight:800;">My Subjects</h1>
+            </div>
+            <button class="btn btn-primary" id="top-action-btn" onclick="openCreateSubject()"><i class="fas fa-plus"></i> Create Subject</button>
+        </div>
+
+        <!-- ✚ v9 SUBJECTS (teacher) -->
+        <div id="tab-subjects-t" class="tab-content">
+            <div id="teacher-subject-grid" class="subject-grid"><div class="skel card-skel"></div></div>
+        </div>
+
+        <div id="tab-overview" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-overview"></div>
+            <div class="stat-grid cols-3">
+                <div class="stat-card"><span style="font-size:.85rem; font-weight:500; color:var(--text-p);">Total Modules</span><h2 id="stat-m-count">0</h2></div>
+                <div class="stat-card"><span style="font-size:.85rem; font-weight:500; color:var(--text-p);">Total Assignments</span><h2 id="stat-a-count">0</h2></div>
+                <div class="stat-card"><span style="font-size:.85rem; font-weight:500; color:var(--text-p);">Enrolled Students</span><h2 id="stat-e-count">0</h2></div>
+            </div>
+            <div class="card" style="margin-top:32px;">
+                <h3 style="margin-bottom:6px;"><i class="fas fa-bullhorn" style="color:#ea580c; margin-right:8px;"></i>Quick Announcement</h3>
+                <p style="font-size:.75rem; color:#94a3b8; margin-bottom:14px;">Posted inside the currently open subject.</p>
+                <input type="text" id="ann-title-quick" placeholder="Announcement title" style="margin-bottom:12px;">
+                <textarea id="ann-body-quick" placeholder="Write the announcement…" style="margin-bottom:14px;"></textarea>
+                <button class="btn btn-primary" id="ann-quick-btn" onclick="postAnnouncement('ann-title-quick','ann-body-quick','ann-quick-btn')"><i class="fas fa-paper-plane"></i> Publish</button>
+            </div>
+        </div>
+
+        <div id="tab-resources" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-resources"></div>
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Attachment</th><th>Submission Link</th><th>Deadline</th><th></th></tr></thead>
+                        <tbody id="resource-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-announcements" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-announcements"></div>
+            <div class="card" style="margin-bottom:24px;">
+                <h3 style="margin-bottom:6px;"><i class="fas fa-pen-to-square" style="color:var(--accent); margin-right:8px;"></i>New Announcement</h3>
+                <input type="text" id="ann-title" placeholder="Title" style="margin-bottom:12px;">
+                <textarea id="ann-body" placeholder="Write the announcement…" style="margin-bottom:14px;"></textarea>
+                <button class="btn btn-primary" id="ann-btn" onclick="postAnnouncement('ann-title','ann-body','ann-btn')"><i class="fas fa-paper-plane"></i> Publish</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:16px;">Posted Announcements</h3>
+                <div id="ann-list"></div>
+            </div>
+        </div>
+
+        <div id="tab-gradebook" class="tab-content hidden">
+            <div class="subject-banner" id="subject-banner-gradebook"></div>
+            <div class="card" style="margin-bottom:24px;">
+                <h3 style="margin-bottom:16px;"><i class="fas fa-pen-to-square" style="color:var(--accent); margin-right:8px;"></i>Encode a Grade</h3>
+                <div class="gb-form">
+                    <div class="input-field"><label>Student (enrolled)</label><select id="gb-student"><option value="">Loading…</option></select></div>
+                    <div class="input-field"><label>Term</label><select id="gb-term" onchange="renderGradebookStudents()"><option>Prelims</option><option>Midterms</option><option>Semi-Finals</option><option>Finals</option></select></div>
+                    <div class="input-field"><label>Grade</label><input type="number" id="gb-grade" min="0" max="100" step="0.01" placeholder="0–100"></div>
+                    <div class="input-field"><label>Remarks (optional)</label><input type="text" id="gb-remarks" placeholder="e.g., Very good"></div>
+                    <button class="btn btn-primary" id="gb-save" onclick="saveGrade()"><i class="fas fa-floppy-disk"></i> Save</button>
+                </div>
+                <p style="font-size:.72rem; color:#94a3b8;">Only students enrolled in this subject appear. Students already graded for the term are hidden. Grades stored exactly as typed.</p>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:16px;">Recorded Grades</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>Student</th><th>Student ID</th><th>Term</th><th>Grade</th><th>Remarks</th><th>Last Updated</th><th></th></tr></thead>
+                        <tbody id="grades-table"><tr><td colspan="7" class="ann-empty">No grades encoded yet.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ============================ MODALS ============================ -->
+<div id="create-subject-modal" class="modal-overlay hidden">
+    <div class="card animate__animated animate__zoomIn" style="width:100%; max-width:480px; max-height:90vh; overflow-y:auto;">
+        <h2 style="margin-bottom:20px; font-weight:800;">Create Subject</h2>
+        <input type="text" id="sub-title" placeholder="Subject title (e.g. Calculus 1)" style="margin-bottom:14px;">
+        <textarea id="sub-desc" placeholder="Short description (shown on the card)" style="margin-bottom:14px; min-height:70px;"></textarea>
+        <div class="input-field">
+            <label>Enrollment code <span style="color:#94a3b8; font-weight:400;">(leave blank to auto-generate)</span></label>
+            <div class="input-wrapper"><i class="fas fa-key"></i><input type="text" id="sub-code" placeholder="e.g. CALC-2024" style="text-transform:uppercase;"></div>
+        </div>
+        <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:8px;">Card color</label>
+        <div class="color-dots" id="sub-colors"></div>
+        <div class="file-input-wrapper">
+            <label style="font-size:.8rem; font-weight:600; color:var(--text-p); display:block; margin-bottom:10px;">THUMBNAIL IMAGE (optional)</label>
+            <input type="file" id="sub-thumb" accept="image/*" style="border:none; margin:0; padding:0; background:transparent; width:100%;">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btn-primary" id="sub-create-btn" onclick="createSubject()" style="flex:2;"><i class="fas fa-shapes"></i> Create Subject</button>
+            <button class="btn btn-ghost" onclick="toggleCSModal(false)" style="flex:1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="resource-modal" class="modal-overlay hidden">
+    <div class="card animate__animated animate__zoomIn" style="width:100%; max-width:480px; max-height:90vh; overflow-y:auto;">
+        <h2 style="margin-bottom:20px; font-weight:800;">Upload Resource</h2>
+        <input type="text" id="res-title" placeholder="Title" style="margin-bottom:18px;">
+        <select id="res-type" onchange="onTypeChange()" style="margin-bottom:18px;">
+            <option value="module">Module</option>
+            <option value="assignment">Assignment</option>
+        </select>
+        <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:6px;">Which sections can see this? <span style="color:#94a3b8; font-weight:400;">(none selected = all sections)</span></label>
+        <div class="sec-picker" id="res-sec-picker"></div>
+        <div id="assignment-fields" class="hidden">
+            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:6px;">One Submission Link <span style="color:#94a3b8; font-weight:400;">(optional)</span></label>
+            <input type="text" id="res-submission-url" placeholder="Google Form / Drive folder link" style="margin-bottom:14px;">
+            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:6px;">Deadline <span style="color:#94a3b8; font-weight:400;">(optional)</span></label>
+            <input type="datetime-local" id="res-deadline" style="margin-bottom:14px;">
+            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:6px;">General Instructions <span style="color:#94a3b8; font-weight:400;">(optional)</span></label>
+            <textarea id="res-instructions" placeholder="e.g., Answer pages 120–125." style="margin-bottom:18px;"></textarea>
+        </div>
+        <div class="file-input-wrapper">
+            <label style="font-size:.8rem; font-weight:600; color:var(--text-p); display:block; margin-bottom:10px;">ATTACH FILE (optional — max 8 MB)</label>
+            <input type="file" id="res-file" style="border:none; margin:0; padding:0; background:transparent; width:100%;">
+        </div>
+        <p style="text-align:center; font-size:.75rem; font-weight:600; color:#94a3b8; margin-bottom:14px;">— OR ENTER EXTERNAL LINK (optional) —</p>
+        <input type="text" id="res-url" placeholder="Drive / External Resource Link (URL)" style="margin-bottom:18px;">
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btn-primary" id="publish-btn" onclick="handleResourceSubmission()" style="flex:2;"><i class="fas fa-cloud-arrow-up"></i> Save Resource</button>
+            <button class="btn btn-ghost" onclick="toggleModal(false)" style="flex:1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="deadline-modal" class="modal-overlay hidden">
+    <div class="card animate__animated animate__zoomIn" style="width:100%; max-width:400px;">
+        <h2 style="margin-bottom:6px; font-weight:800;">Extend Deadline</h2>
+        <p id="dl-label" style="color:var(--text-p); font-size:.9rem; margin-bottom:18px;"></p>
+        <input type="datetime-local" id="dl-input" style="margin-bottom:18px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" id="dl-save" onclick="saveNewDeadline()" style="flex:2;"><i class="fas fa-clock-rotate-left"></i> Update Deadline</button>
+            <button class="btn btn-ghost" onclick="toggleDeadlineModal(false)" style="flex:1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="roster-modal" class="modal-overlay hidden">
+    <div class="card animate__animated animate__zoomIn" style="width:100%; max-width:440px; max-height:80vh; overflow-y:auto;">
+        <h2 style="margin-bottom:6px; font-weight:800;">Enrolled Students</h2>
+        <p id="roster-label" style="color:var(--text-p); font-size:.9rem; margin-bottom:16px;"></p>
+        <div id="roster-list"></div>
+        <button class="btn btn-ghost" onclick="toggleRosterModal(false)" style="width:100%; margin-top:8px;">Close</button>
+    </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+    /* ⚠️ Paste your ACTIVE web app URL here */
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0IihZjy8w3AsAZjRJp3wLu2iZvMafRJIfCTFPZC6qqeF8BzENs01-reOX4A-cYLvF/exec';
+
+    const SESSION_KEY = 'mathClass_user';
+    const CACHE_TTL = 60000;
+    const CACHE_KEY_PREFIX = 'tdc9_cache_';
+    const SECTIONS = ['UNIVERSAL SBE','UNIVERSAL STE','BSN 1B','BSN 1C','BSN 1D','BSN 1E','BSN 1G','BSN 1H','BSN 1M'];
+    const CARD_COLORS = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
+
+    let currentUser = null;
+    let completedTaskIds = new Set();
+    let selectedRole = 'student';
+    let dlTargetId = null;
+    let menuOpen = false;
+    let lastGrades = [];
+    let allStudents = [];
+    let currentSubject = null;          /* ✚ v9: null = subjects home; object = inside a subject */
+    let mySubjects = [], enrolledIds = [];
+    let teacherSubjects = {}, teacherRosters = {};
+    let selectedCardColor = CARD_COLORS[0];
+    let accessTarget = null;
+    let lastTeacherResources = [];
+
+    /* =================== API LAYER =================== */
+    async function apiCall(payload) {
+        try {
+            const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload) });
+            const text = await res.text();
+            try { return JSON.parse(text); }
+            catch (e) {
+                console.error('Non-JSON response:', text.slice(0, 200));
+                setReady('error', 'Server error');
+                return { success:false, message:'Server returned an invalid response. Check the Apps Script deployment.' };
+            }
+        } catch (err) { console.error('API Error:', err); setReady('error','Offline'); return { success:false, message:'Server connection error.' }; }
+    }
+    function cacheKey(action) { return CACHE_KEY_PREFIX + action + '_' + (currentUser ? currentUser.id : 'anon') + '_' + (currentSubject ? currentSubject.id : 'home'); }
+    function readDiskCache(key) { try { const r = sessionStorage.getItem(key); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+    function writeDiskCache(key, val) { try { sessionStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+    async function cachedApiCall(action, payload = {}) {
+        const key = cacheKey(action);
+        const cached = readDiskCache(key);
+        if (cached && (Date.now() - cached._at) < CACHE_TTL) return cached;
+        if (cached) {
+            apiCall({ action, ...payload }).then(res => { if (res.success) writeDiskCache(key, { ...res, _at: Date.now() }); }).catch(() => {});
+            return cached;
+        }
+        const res = await apiCall({ action, ...payload });
+        if (res.success) writeDiskCache(key, { ...res, _at: Date.now() });
+        return res;
+    }
+    function invalidateCache() {
+        try { Object.keys(sessionStorage).filter(k => k.startsWith(CACHE_KEY_PREFIX)).forEach(k => sessionStorage.removeItem(k)); } catch (e) {}
+    }
+
+    /* =================== HELPERS =================== */
+    function setReady(state, text) { document.getElementById('ready-pill').className = state; document.getElementById('ready-text').textContent = text; }
+    function bootDone(label) { if (label) document.getElementById('boot-label').textContent = label; document.getElementById('boot-overlay').classList.add('done'); }
+    setTimeout(() => bootDone(), 3000);
+    function showToast(msg, type = "") {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.className = 'toast show ' + type;
+        clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+    function escapeHtml_(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function toggleAuth(type) {
+        document.getElementById('login-form').classList.toggle('hidden', type === 'register');
+        document.getElementById('register-form').classList.toggle('hidden', type === 'login');
+    }
+    function toggleModal(show) { document.getElementById('resource-modal').classList.toggle('hidden', !show); }
+    function toggleDeadlineModal(show) { document.getElementById('deadline-modal').classList.toggle('hidden', !show); }
+    function toggleCSModal(show) { document.getElementById('create-subject-modal').classList.toggle('hidden', !show); }
+    function toggleRosterModal(show) { document.getElementById('roster-modal').classList.toggle('hidden', !show); }
+    function toggleMobileMenu() {
+        menuOpen = !menuOpen;
+        const stu = document.getElementById('mobile-menu-student');
+        const tea = document.getElementById('mobile-menu-teacher');
+        if (currentUser && currentUser.role === 'teacher') { tea.classList.toggle('show', menuOpen); stu.classList.remove('show'); }
+        else { stu.classList.toggle('show', menuOpen); tea.classList.remove('show'); }
+        document.getElementById('hamburger-icon').className = menuOpen ? 'fas fa-xmark' : 'fas fa-bars';
+    }
+    function closeMobileMenu() {
+        menuOpen = false;
+        document.getElementById('mobile-menu-student').classList.remove('show');
+        document.getElementById('mobile-menu-teacher').classList.remove('show');
+        document.getElementById('hamburger-icon').className = 'fas fa-bars';
+    }
+
+    function parseTargetSections(item) {
+        const raw = item.targetSections || '';
+        if (Array.isArray(raw)) return raw.map(s => String(s).trim()).filter(Boolean);
+        const s = String(raw || '').trim();
+        if (!s || s === '[]') return [];
+        try { const arr = JSON.parse(s); return Array.isArray(arr) ? arr.map(x => String(x).trim()) : []; }
+        catch (e) { return s.split(',').map(x => x.trim()).filter(Boolean); }
+    }
+    function canSee(item, section) {
+        const targets = parseTargetSections(item);
+        if (!targets.length) return true;
+        const norm = s => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const my = norm(section);
+        return !!my && targets.some(t => norm(t) === my);
+    }
+    function targetChips(item) {
+        const t = parseTargetSections(item);
+        if (!t.length) return `<span class="visible-chip"><i class="fas fa-globe"></i> All sections</span>`;
+        return t.map(s => `<span class="visible-chip"><i class="fas fa-users-rectangle"></i> ${escapeHtml_(s)}</span>`).join('');
+    }
+    function buildSecPicker(containerId, preselected = []) {
+        const box = document.getElementById(containerId);
+        const set = new Set(preselected.map(s => String(s).trim()));
+        box.innerHTML = SECTIONS.map(s => `
+            <label class="sec-pick${set.has(s) ? ' on' : ''}"><input type="checkbox" value="${escapeHtml_(s)}" ${set.has(s) ? 'checked' : ''} onchange="this.closest('.sec-pick').classList.toggle('on', this.checked)">${escapeHtml_(s)}</label>`).join('');
+    }
+    function readSecPicker(containerId) { return [...document.querySelectorAll('#' + containerId + ' input:checked')].map(i => i.value); }
+    function sectionOptions(selected, placeholder) {
+        return `<option value="">${placeholder}</option>` +
+            SECTIONS.map(s => `<option value="${escapeHtml_(s)}" ${s === selected ? 'selected' : ''}>${escapeHtml_(s)}</option>`).join('');
+    }
+    document.getElementById('reg-section').innerHTML = sectionOptions('', 'Select your section…');
+    function pickRole(role) {
+        selectedRole = role;
+        document.querySelectorAll('.role-option').forEach(o => o.classList.toggle('selected', o.dataset.role === role));
+        document.getElementById('teacher-code-field').classList.toggle('hidden', role !== 'teacher');
+        document.getElementById('sid-field').style.display = role === 'teacher' ? 'none' : '';
+        document.getElementById('section-field').style.display = role === 'teacher' ? 'none' : '';
+    }
+
+    /* =================== ✚ v9 SUBJECT HELPERS =================== */
+    function subjectThumb(sub, cls) {
+        if (sub.thumbnailUrl) return `<img class="${cls || 'subject-thumb'}" src="${escapeHtml_(sub.thumbnailUrl)}" alt="" onerror="this.outerHTML='<div class=&quot;subject-thumb-div&quot; style=&quot;background:${sub.color}&quot;><i class=&quot;fas fa-square-root-variable&quot;></i></div>'">`;
+        return `<div class="${cls === 'sb-thumb' ? 'sb-thumb' : 'subject-thumb-div'}" ${cls === 'sb-thumb' ? `style="background:${sub.color}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.3rem;"` : `style="background:${sub.color}"`}><i class="fas fa-square-root-variable"></i></div>`;
+    }
+    function subjectBanner(targetId) {
+        const el = document.getElementById(targetId);
+        if (!el) return;
+        if (!currentSubject) { el.innerHTML = `<div style="display:flex; align-items:center; gap:10px; color:var(--text-p); font-size:.85rem;"><i class="fas fa-circle-info"></i> No subject open — pick one from <a href="#" onclick="showTab${currentUser.role==='teacher'?'T':''}('subjects'); return false;" style="color:var(--accent); font-weight:700;">My Subjects</a> to load its content here.</div>`; return; }
+        el.innerHTML = `
+            <button class="btn btn-ghost" style="padding:8px 14px;" onclick="backToSubjects()"><i class="fas fa-arrow-left"></i></button>
+            ${subjectThumb(currentSubject, 'sb-thumb')}
+            <div style="min-width:0;">
+                <h3 style="font-weight:800; margin:0;">${escapeHtml_(currentSubject.title)}</h3>
+                <span class="subject-code" style="color:var(--accent);">${escapeHtml_(currentSubject.code)}</span>
+            </div>`;
+    }
+    function backToSubjects() {
+        currentSubject = null;
+        invalidateCache();
+        if (currentUser.role === 'teacher') showTabT('subjects'); else showTab('subjects');
+    }
+
+    /* ---------- AUTH ---------- */
+    async function signIn() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        if (!email || !password) return showToast('Please fill in both fields.', 'error');
+        const btn = document.getElementById('signin-btn');
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'signIn', email, password });
+        btn.classList.remove('is-loading');
+        if (res.success) {
+            if (document.getElementById('remember-me').checked) localStorage.setItem('tdc_remember_email', email);
+            else localStorage.removeItem('tdc_remember_email');
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(res.user));
+            openPortal(res.user);
+        } else showToast(res.message || 'Invalid email or password.', 'error');
+    }
+    async function signUp() {
+        const payload = { action:'signUp',
+            email:document.getElementById('reg-email').value.trim(),
+            password:document.getElementById('reg-password').value,
+            display_name:document.getElementById('reg-username').value.trim(),
+            student_id:document.getElementById('reg-id').value.trim(),
+            section:document.getElementById('reg-section').value,
+            role:selectedRole,
+            teacher_code:document.getElementById('reg-teacher-code').value };
+        if (!payload.display_name || !payload.email || !payload.password) return showToast('Please fill in all required fields.', 'error');
+        if (payload.role === 'student' && !payload.section) return showToast('Please select your section.', 'error');
+        if (payload.role === 'teacher' && !payload.teacher_code) return showToast('Faculty access code is required.', 'error');
+        const btn = document.getElementById('signup-btn');
+        btn.classList.add('is-loading');
+        const res = await apiCall(payload);
+        btn.classList.remove('is-loading');
+        if (res.success) { showToast('Account created successfully. Please sign in.', 'success'); toggleAuth('login'); }
+        else showToast(res.message || 'Sign up failed.', 'error');
+    }
+    function openPortal(user) {
+        currentUser = user;
+        closeMobileMenu();
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('mobile-navigation-bar').classList.remove('hidden');
+        bootDone('Welcome back, ' + (user.display_name || 'user') + '!');
+        if (user.role === 'teacher') {
+            document.getElementById('portal-teacher').classList.remove('hidden');
+            document.getElementById('teacher-name').innerText = user.display_name || 'Teacher';
+            showTabT('subjects');
+        } else {
+            document.getElementById('portal-student').classList.remove('hidden');
+            document.getElementById('display-name').innerText = user.display_name || user.email;
+            document.getElementById('display-id').innerText =
+                (user.student_id ? 'ID: ' + user.student_id : '') +
+                (user.section ? (user.student_id ? ' · ' : '') + 'Sec: ' + user.section : '');
+            showTab('subjects');
+        }
+    }
+    function signOut() { sessionStorage.removeItem(SESSION_KEY); invalidateCache(); location.reload(); }
+
+    /* ---------- ✚ v9 SUBJECTS — student ---------- */
+    async function loadMySubjects() {
+        const grid = document.getElementById('subject-grid');
+        const res = await apiCall({ action:'fetchSubjects', userId:currentUser.id });
+        if (!res.success) { grid.innerHTML = '<div class="ann-empty">Could not load subjects.</div>'; return; }
+        mySubjects = res.subjects || [];
+        enrolledIds = (res.enrolledIds || []).map(String);
+        if (!mySubjects.length) { grid.innerHTML = '<div class="ann-empty">No subjects published yet. Ask your teacher for an enrollment code! 🔑</div>'; return; }
+        grid.innerHTML = mySubjects.map(s => {
+            const enrolled = enrolledIds.includes(String(s.id));
+            return `
+            <div class="subject-card-wrap">
+                <div class="subject-card" onclick="openSubject('${s.id}')">
+                    ${enrolled ? '<span class="enrolled-pill"><i class="fas fa-check"></i> Enrolled</span>' : ''}
+                    ${subjectThumb(s)}
+                    <div class="subject-body">
+                        <h4>${escapeHtml_(s.title)}</h4>
+                        <div class="desc">${escapeHtml_(s.description || '')}</div>
+                        <span class="subject-code" style="color:var(--accent);">${escapeHtml_(s.code)}</span>
+                        <div class="subject-teacher"><i class="fas fa-chalkboard-user"></i> ${escapeHtml_(s.teacherName || 'Teacher')}</div>
+                    </div>
+                </div>
+                ${enrolled ? `<div class="subject-actions"><button class="btn btn-ghost" style="flex:1; padding:8px;" onclick="dropSubjectConfirm('${s.id}','${escapeHtml_(s.title).replace(/'/g,"\\'")}')"><i class="fas fa-right-from-bracket"></i> Drop</button></div>` : ''}
+            </div>`;
+        }).join('');
+    }
+    async function enrollWithCode() {
+        const code = document.getElementById('enroll-code').value.trim();
+        if (!code) return showToast('Enter an enrollment code.', 'error');
+        const btn = document.getElementById('enroll-btn');
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'enrollSubject', userId:currentUser.id, code });
+        btn.classList.remove('is-loading');
+        if (res.success) {
+            showToast('Enrolled in ' + (res.subject ? res.subject.title : 'subject') + '! 🎓', 'success');
+            document.getElementById('enroll-code').value = '';
+            invalidateCache();
+            loadMySubjects();
+        } else showToast(res.message || 'Enrollment failed.', 'error');
+    }
+    async function dropSubjectConfirm(subjectId, title) {
+        if (!confirm(`Drop "${title}"?\n\nYou will lose access to its modules, assignments and grades here.`)) return;
+        const res = await apiCall({ action:'dropSubject', userId:currentUser.id, subjectId });
+        if (res.success) {
+            if (currentSubject && String(currentSubject.id) === String(subjectId)) currentSubject = null;
+            showToast('Dropped the subject.', 'success');
+            invalidateCache();
+            loadMySubjects();
+            if (!currentSubject) showTab('subjects');
+        } else showToast(res.message || 'Failed to drop.', 'error');
+    }
+    function openSubject(subjectId) {
+        const sub = mySubjects.find(s => String(s.id) === String(subjectId));
+        if (!sub) return;
+        if (!enrolledIds.includes(String(subjectId))) return showToast('Enroll first to open this subject.', 'error');
+        currentSubject = sub;
+        invalidateCache();
+        showTab('dashboard');
+    }
+
+    /* ---------- ✚ v9 SUBJECTS — teacher ---------- */
+    function openCreateSubject() {
+        selectedCardColor = CARD_COLORS[0];
+        renderColorDots();
+        document.getElementById('sub-title').value = '';
+        document.getElementById('sub-desc').value = '';
+        document.getElementById('sub-code').value = '';
+        document.getElementById('sub-thumb').value = '';
+        toggleCSModal(true);
+    }
+    function renderColorDots() {
+        document.getElementById('sub-colors').innerHTML = CARD_COLORS.map(c =>
+            `<div class="color-dot${c === selectedCardColor ? ' on' : ''}" style="background:${c}" onclick="selectedCardColor='${c}'; renderColorDots()"></div>`).join('');
+    }
+    async function createSubject() {
+        const title = document.getElementById('sub-title').value.trim();
+        if (!title) return showToast('Enter a subject title.', 'error');
+        const btn = document.getElementById('sub-create-btn');
+        btn.classList.add('is-loading');
+        const finish = async (payload) => {
+            const res = await apiCall({ action:'createSubject', userId:currentUser.id, ...payload });
+            btn.classList.remove('is-loading');
+            if (res.success) {
+                showToast('Subject created! Share code: ' + (res.subject ? res.subject.code : ''), 'success');
+                toggleCSModal(false);
+                invalidateCache();
+                loadTeacherSubjects();
+            } else { showToast(res.message || 'Failed to create subject.', 'error'); }
+        };
+        const payload = {
+            title,
+            description: document.getElementById('sub-desc').value.trim(),
+            code: document.getElementById('sub-code').value.trim(),
+            color: selectedCardColor
+        };
+        const thumbFile = document.getElementById('sub-thumb').files[0];
+        if (thumbFile) {
+            if (thumbFile.size > 5 * 1024 * 1024) { btn.classList.remove('is-loading'); return showToast('Thumbnail too large — max 5 MB.', 'error'); }
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                payload.fileData = e.target.result; payload.fileName = thumbFile.name; payload.fileMime = thumbFile.type;
+                await finish(payload);
+            };
+            reader.readAsDataURL(thumbFile);
+        } else await finish(payload);
+    }
+    async function loadTeacherSubjects() {
+        const grid = document.getElementById('teacher-subject-grid');
+        const res = await apiCall({ action:'fetchSubjectsTeacher', userId:currentUser.id });
+        if (!res.success) { grid.innerHTML = '<div class="ann-empty">Could not load subjects.</div>'; return; }
+        teacherSubjects = {}; (res.subjects || []).forEach(s => teacherSubjects[s.id] = s);
+        teacherRosters = res.rosters || {};
+        if (!res.subjects || !res.subjects.length) {
+            grid.innerHTML = '<div class="ann-empty">You haven\'t created any subjects yet. Click <strong>Create Subject</strong> to start your first class! 🚀</div>';
+            return;
+        }
+        grid.innerHTML = res.subjects.map(s => `
+            <div class="subject-card-wrap">
+                <div class="subject-card" onclick="openSubjectT('${s.id}')">
+                    ${subjectThumb(s)}
+                    <div class="subject-body">
+                        <h4>${escapeHtml_(s.title)}</h4>
+                        <div class="desc">${escapeHtml_(s.description || '')}</div>
+                        <span class="subject-code" style="color:var(--accent);"><i class="fas fa-key" style="margin-right:4px;"></i>${escapeHtml_(s.code)}</span>
+                        <div class="subject-teacher"><i class="fas fa-user-group"></i> ${(teacherRosters[s.id] || []).length} enrolled</div>
+                    </div>
+                </div>
+                <div class="subject-actions">
+                    <button class="btn btn-ghost" style="flex:1; padding:8px; font-size:.78rem;" onclick="showRoster('${s.id}')"><i class="fas fa-list"></i> Roster</button>
+                    <button class="btn btn-ghost" style="flex:1; padding:8px; font-size:.78rem;" onclick="copyCode('${escapeHtml_(s.code)}')"><i class="fas fa-copy"></i> Code</button>
+                    <button class="btn btn-danger-icon" style="padding:8px 12px;" onclick="deleteSubjectConfirm('${s.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`).join('');
+    }
+    function copyCode(code) {
+        (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject())
+            .then(() => showToast('Code ' + code + ' copied — share it with your students! 📋', 'success'))
+            .catch(() => showToast('Code: ' + code, 'success'));
+    }
+    function showRoster(subjectId) {
+        const sub = teacherSubjects[subjectId] || {};
+        const roster = teacherRosters[subjectId] || [];
+        document.getElementById('roster-label').innerHTML = `<strong>${escapeHtml_(sub.title || '')}</strong> — ${(roster.length)} enrolled student${roster.length === 1 ? '' : 's'}. Code: <strong>${escapeHtml_(sub.code || '')}</strong>`;
+        document.getElementById('roster-list').innerHTML = roster.length
+            ? roster.map(r => `<div class="roster-item"><span><strong>${escapeHtml_(r.display_name)}</strong>${r.student_id ? ' · ' + escapeHtml_(r.student_id) : ''}</span><span class="sec-chip"><i class="fas fa-users-rectangle"></i> ${escapeHtml_(r.section || '—')}</span></div>`).join('')
+            : '<div class="ann-empty">No students enrolled yet. Share the code!</div>';
+        toggleRosterModal(true);
+    }
+    async function deleteSubjectConfirm(subjectId) {
+        const sub = teacherSubjects[subjectId] || {};
+        const code = prompt(`Delete "${sub.title}"?\n\nThis removes ALL its resources, announcements and grades permanently.\n\nType the subject code (${sub.code}) to confirm:`);
+        if (code === null) return;
+        const res = await apiCall({ action:'deleteSubject', userId:currentUser.id, subjectId, confirmCode:code });
+        if (res.success) {
+            if (currentSubject && String(currentSubject.id) === String(subjectId)) currentSubject = null;
+            showToast('Subject deleted.', 'success');
+            invalidateCache();
+            loadTeacherSubjects();
+            showTabT('subjects');
+        } else showToast(res.message || 'Failed to delete.', 'error');
+    }
+    function openSubjectT(subjectId) {
+        const sub = teacherSubjects[subjectId];
+        if (!sub) return;
+        currentSubject = sub;
+        invalidateCache();
+        showTabT('overview');
+    }
+
+    /* ---------- STUDENT TABS ---------- */
+    const STUDENT_TITLES = { subjects:'My Subjects', dashboard:'Dashboard', modules:'Curriculum', assignments:'Assignments', grades:'My Grades' };
+    function showTab(tabName) {
+        closeMobileMenu();
+        document.getElementById('tab-title').innerText = STUDENT_TITLES[tabName] || tabName;
+        document.querySelectorAll('#portal-student .tab-content').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('#portal-student .sidebar .nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('#mobile-menu-student .nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('nav-' + tabName).classList.add('active');
+        document.getElementById('m-nav-' + tabName).classList.add('active');
+        document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+        if (tabName !== 'subjects' && !currentSubject) {
+            showToast('Open a subject first — taking you back.', '');
+            return showTab('subjects');
+        }
+        if (tabName === 'subjects') loadMySubjects();
+        else if (tabName === 'dashboard') updateDashboardStats();
+        else if (tabName === 'grades') loadStudentGrades();
+        else fetchResources();
+    }
+
+    async function updateDashboardStats() {
+        setReady('', 'Syncing…');
+        subjectBanner('subject-banner-student');
+        const [progRes, annRes, resRes] = await Promise.all([
+            apiCall({ action:'fetchProgress', userId:currentUser.id }),
+            cachedApiCall('fetchAnnouncements', { subjectId: currentSubject.id }),
+            cachedApiCall('fetchResources', { subjectId: currentSubject.id })
+        ]);
+        if (progRes.success) completedTaskIds = new Set(progRes.completedTaskIds);
+        const myAnns = (annRes.success ? annRes.announcements : []).filter(a => canSee(a, currentUser.section));
+        renderAnnouncements('student-announcements', myAnns, false);
+        if (!resRes.success) { setReady('error','Sync failed'); return; }
+        const resources = resRes.resources.filter(i => canSee(i, currentUser.section));
+        const modules = resources.filter(i => (i.type || 'module').toLowerCase() !== 'assignment').length;
+        const totalTasks = resources.filter(i => (i.type || '').toLowerCase() === 'assignment').length;
+        const pending = Math.max(0, totalTasks - completedTaskIds.size);
+        document.getElementById('stat-modules').innerText = modules;
+        document.getElementById('stat-assignments').innerText = pending;
+        const name = currentUser.display_name || "Student";
+        document.getElementById('welcome-msg').innerHTML = pending > 0
+            ? `Greetings, <strong>${name}</strong>. There are <strong>${pending}</strong> assignments awaiting in <strong>${escapeHtml_(currentSubject.title)}</strong>.`
+            : `Greetings, <strong>${name}</strong>. Everything is up to date in <strong>${escapeHtml_(currentSubject.title)}</strong>.`;
+        setReady('ready','Ready ✓');
+    }
+
+    function renderAnnouncements(boxId, anns, showTools = false) {
+        const box = document.getElementById(boxId);
+        if (!anns.length) { box.innerHTML = '<div class="ann-empty">No announcements yet. You\'re all caught up! 🎉</div>'; return; }
+        box.innerHTML = anns.map(a => `
+            <div class="ann-item">
+                <h4><span class="ann-icon"><i class="fas fa-bullhorn"></i></span>${escapeHtml_(a.title)}</h4>
+                <p>${escapeHtml_(a.body)}</p>
+                <div class="ann-meta">
+                    <span><i class="fas fa-clock"></i> ${new Date(a.created_at).toLocaleString()}</span>
+                    ${targetChips(a)}
+                    ${showTools ? `
+                        <span style="flex:1"></span>
+                        <button class="btn btn-danger-icon" style="padding:7px 12px; font-size:.75rem;" onclick="deleteAnnouncement('${a.id}')"><i class="fas fa-trash"></i> Delete</button>` : ''}
+                </div>
+            </div>`).join('');
+    }
+
+    function deadlineBadge(deadlineIso) {
+        if (!deadlineIso) return '';
+        const dl = new Date(deadlineIso);
+        const diff = dl - new Date();
+        const when = dl.toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+        if (diff < 0) return `<span class="dl-badge dl-closed"><i class="fas fa-lock"></i> Deadline passed · ${when}</span>`;
+        if (diff < 864e5) return `<span class="dl-badge dl-soon"><i class="fas fa-clock"></i> Due soon · ${when}</span>`;
+        return `<span class="dl-badge dl-open"><i class="fas fa-calendar-day"></i> Due ${when}</span>`;
+    }
+
+    async function fetchResources() {
+        const bannerIds = { modules:'subject-banner-modules', assignments:'subject-banner-assignments' };
+        setReady('', 'Syncing…');
+        const [progRes, resRes] = await Promise.all([
+            apiCall({ action:'fetchProgress', userId:currentUser.id }),
+            cachedApiCall('fetchResources', { subjectId: currentSubject.id })
+        ]);
+        Object.keys(bannerIds).forEach(k => { if (!document.getElementById('tab-' + k).classList.contains('hidden')) subjectBanner(bannerIds[k]); });
+        if (progRes.success) completedTaskIds = new Set(progRes.completedTaskIds);
+        if (!resRes.success) { setReady('error','Sync failed'); return; }
+        setReady('ready','Ready ✓');
+
+        let mods = '', asg = '';
+        resRes.resources.filter(item => canSee(item, currentUser.section)).forEach(item => {
+            const type = (item.type || "module").toLowerCase();
+            if (type === 'assignment') {
+                const isDone = completedTaskIds.has(item.id.toString());
+                const closed = item.deadline && (new Date(item.deadline) - new Date() < 0);
+                const subUrl = String(item.submissionUrl || '').trim();
+                const submitBtn = subUrl
+                    ? (closed
+                        ? `<button class="btn btn-locked" disabled><i class="fas fa-lock"></i> Closed</button>`
+                        : `<button class="btn btn-submit" id="submit-btn-${item.id}" onclick="attemptSubmit('${item.id}', this)" data-sub="${escapeHtml_(subUrl)}"><i class="fas fa-paper-plane"></i> Submit Work</button>`)
+                    : '';
+                const viewBtn = item.url ? `<a href="${escapeHtml_(item.url)}" target="_blank" rel="noopener" class="btn btn-primary"><i class="fas fa-file-arrow-down"></i> Attachment</a>` : '';
+                const instrBox = item.instructions ? `<div class="instr-box"><strong><i class="fas fa-clipboard-list"></i> Instructions</strong>${escapeHtml_(item.instructions)}</div>` : '';
+                asg += `
+                    <div class="list-item" style="flex-direction:column; align-items:stretch;">
+                        <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+                            <div class="resource-info">
+                                <div class="resource-icon icon-assignment"><i class="fas fa-clipboard-list"></i></div>
+                                <div style="min-width:0;">
+                                    <h4 style="margin:0;" title="${escapeHtml_(item.title)}">${escapeHtml_(item.title)}</h4>
+                                    <span id="badge-${item.id}" class="status-badge ${isDone ? 'badge-done' : 'badge-pending'}" style="margin-top:4px;">
+                                        ${isDone ? '<i class="fas fa-circle-check"></i> Completed' : '<i class="fas fa-clock"></i> Pending'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="action-group">
+                                ${viewBtn}${submitBtn}
+                                <button id="done-btn-${item.id}" class="btn btn-success" style="opacity:${isDone ? '0.5' : '1'};" onclick="toggleTaskStatus('${item.id}')"><i class="fas fa-check-double"></i></button>
+                            </div>
+                        </div>
+                        ${deadlineBadge(item.deadline)}${instrBox}
+                    </div>`;
+            } else {
+                const openBtn = item.url ? `<a href="${escapeHtml_(item.url)}" target="_blank" rel="noopener" class="btn btn-primary"><i class="fas fa-book-open"></i> Open</a>` : '';
+                mods += `
+                    <div class="list-item">
+                        <div class="resource-info">
+                            <div class="resource-icon icon-module"><i class="fas fa-book"></i></div>
+                            <div style="min-width:0; flex:1;"><h4 style="margin:0;" title="${escapeHtml_(item.title)}">${escapeHtml_(item.title)}</h4></div>
+                        </div>${openBtn}
+                    </div>`;
+            }
+        });
+        document.getElementById('modules-container').innerHTML = mods || '<div class="ann-empty">No modules in this subject yet.</div>';
+        document.getElementById('assignments-container').innerHTML = asg || '<div class="ann-empty">No assignments in this subject yet. 🎉</div>';
+    }
+
+    function attemptSubmit(resourceId, btnEl) {
+        btnEl = btnEl || document.getElementById('submit-btn-' + resourceId);
+        const subUrl = btnEl ? btnEl.dataset.sub : '';
+        if (!subUrl) return showToast('No submission link for this assignment yet.', 'error');
+        window.open(subUrl, '_blank', 'noopener');
+        if (btnEl) btnEl.classList.add('is-loading');
+        apiCall({ action:'logSubmission', userId:currentUser.id, resourceId:String(resourceId) })
+            .then(res => {
+                if (btnEl) btnEl.classList.remove('is-loading');
+                if (res.success) showToast('Submission recorded — good luck! 🍀', 'success');
+                else showToast(res.message || 'Submission not recorded.', 'error');
+            })
+            .catch(() => { if (btnEl) btnEl.classList.remove('is-loading'); });
+    }
+    async function toggleTaskStatus(id) {
+        const badge = document.getElementById('badge-' + id);
+        const btn = document.getElementById('done-btn-' + id);
+        const res = await apiCall({ action:'toggleTask', userId:currentUser.id, resourceId:id.toString() });
+        if (!res.success) return showToast('Failed to update status.', 'error');
+        if (res.status === 'added') {
+            completedTaskIds.add(id.toString());
+            badge.className = "status-badge badge-done";
+            badge.innerHTML = `<i class="fas fa-circle-check"></i> Completed`;
+            btn.style.opacity = "0.5";
+            showToast('Marked as completed ✓', 'success');
+        } else {
+            completedTaskIds.delete(id.toString());
+            badge.className = "status-badge badge-pending";
+            badge.innerHTML = `<i class="fas fa-clock"></i> Pending`;
+            btn.style.opacity = "1";
+        }
+    }
+
+    async function loadStudentGrades() {
+        subjectBanner('subject-banner-grades');
+        const box = document.getElementById('grades-container');
+        box.innerHTML = '<div class="skel card-skel"></div>';
+        const res = await apiCall({ action:'fetchGrades', userId:currentUser.id, subjectId: currentSubject.id });
+        if (!res.success) { box.innerHTML = '<div class="ann-empty">Could not load grades.</div>'; return; }
+        if (!res.grades.length) { box.innerHTML = '<div class="ann-empty">No grades posted yet in this subject. 📊</div>'; return; }
+        const order = ['Prelims','Midterms','Semi-Finals','Finals'];
+        res.grades.sort((a,b) => order.indexOf(a.term) - order.indexOf(b.term));
+        const formatGrade = (v) => { const n = parseFloat(v); return isNaN(n) ? String(v || '') : String(n); };
+        const avgNum = res.grades.reduce((s,g) => s + parseFloat(g.grade || 0), 0) / res.grades.length;
+        const avg = isNaN(avgNum) ? '—' : String(Math.round(avgNum * 100) / 100);
+        box.innerHTML = `
+            <div class="grade-card-row">
+                ${res.grades.map(g => `
+                    <div class="grade-tile">
+                        <div class="term">${escapeHtml_(g.term)}</div>
+                        <div class="val">${formatGrade(g.grade)}</div>
+                        <div class="rem">${escapeHtml_(g.remarks || '')}</div>
+                    </div>`).join('')}
+            </div>
+            <div class="grade-tile" style="margin-top:16px; border-color:var(--accent);">
+                <div class="term">General Average · ${escapeHtml_(currentSubject.title)}</div>
+                <div class="val">${avg}</div>
+            </div>`;
+    }
+
+    /* ---------- TEACHER TABS ---------- */
+    const TEACHER_TITLES = { subjects:'My Subjects', overview:'Overview', resources:'Resources', announcements:'Announcements', gradebook:'Term Grades' };
+    function showTabT(name) {
+        closeMobileMenu();
+        document.getElementById('tab-title-t').innerText = TEACHER_TITLES[name] || name;
+        document.querySelectorAll('#portal-teacher .tab-content').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('#portal-teacher .sidebar .nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('#mobile-menu-teacher .nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('nav-' + (name === 'subjects' ? 'subjects-t' : name)).classList.add('active');
+        document.getElementById('tm-nav-' + name).classList.add('active');
+        document.getElementById('tab-' + name).classList.remove('hidden');
+
+        const topBtn = document.getElementById('top-action-btn');
+        if (name === 'subjects') {
+            topBtn.innerHTML = '<i class="fas fa-plus"></i> Create Subject';
+            topBtn.onclick = openCreateSubject;
+            currentSubject = null;
+            loadTeacherSubjects();
+            return;
+        }
+        if (!currentSubject) {
+            showToast('Open a subject first — taking you back.', '');
+            return showTabT('subjects');
+        }
+        topBtn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Add Resource';
+        topBtn.onclick = openResourceModal;
+
+        if (name === 'gradebook') loadGradebook();
+        else loadTeacherData();
+    }
+
+    async function loadTeacherData() {
+        setReady('', 'Syncing…');
+        ['subject-banner-overview','subject-banner-resources','subject-banner-announcements','subject-banner-gradebook'].forEach(subjectBanner);
+        const json = await cachedApiCall('fetchResourcesTeacher', { subjectId: currentSubject.id });
+        if (!json.success) { setReady('error','Sync failed'); showToast(json.message || 'Failed to load data.', 'error'); return; }
+
+        const items = json.resources || [];
+        lastTeacherResources = items;
+        document.getElementById('stat-m-count').innerText = items.filter(r => String(r.type).toLowerCase() === 'module').length;
+        document.getElementById('stat-a-count').innerText = items.filter(r => String(r.type).toLowerCase() === 'assignment').length;
+        document.getElementById('stat-e-count').innerText = (teacherRosters[currentSubject.id] || []).length;
+
+        document.getElementById('resource-list').innerHTML = items.map(r => {
+            const isAssign = String(r.type).toLowerCase() === 'assignment';
+            const dl = r.deadline ? new Date(r.deadline) : null;
+            const dlCell = dl
+                ? `<span class="dl-cell ${dl < new Date() ? 'overdue' : ''}">${dl.toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${dl < new Date() ? ' · passed' : ''}</span>`
+                : '<span style="color:#94a3b8;">None</span>';
+            const subCell = r.submissionUrl
+                ? `<a class="sec-chip" href="${escapeHtml_(r.submissionUrl)}" target="_blank" rel="noopener"><i class="fas fa-paper-plane"></i> Open link</a>`
+                : '<span style="color:#94a3b8;">None</span>';
+            const safeTitle = escapeHtml_(r.title).replace(/'/g, "\\'");
+            return `
+            <tr>
+                <td style="font-weight:600; color:var(--text-p);">${r.id}</td>
+                <td style="font-weight:600;">${escapeHtml_(r.title)}</td>
+                <td><span class="type-pill ${isAssign ? 'assignment' : ''}">${r.type}</span></td>
+                <td>${r.url ? `<a href="${escapeHtml_(r.url)}" target="_blank" rel="noopener" class="btn btn-primary" style="padding:8px 14px;"><i class="fas fa-paperclip"></i> Open</a>` : '<span style="color:#94a3b8;">None</span>'}</td>
+                <td>${subCell}</td>
+                <td>${dlCell}</td>
+                <td style="white-space:nowrap;">
+                    ${isAssign ? `<button class="btn btn-ghost" style="padding:8px 14px; font-size:.8rem;" onclick="openDeadlineModal('${r.id}', ${r.deadline ? `'${r.deadline}'` : 'null'})"><i class="fas fa-clock-rotate-left"></i> ${r.deadline ? 'Extend' : 'Set'}</button>` : ''}
+                    <button class="btn btn-danger-icon" style="padding:8px 12px;" onclick="deleteResource('${r.id}','${safeTitle}')"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        renderAnnouncements('ann-list', json.announcements || [], true);
+        setReady('ready','Ready ✓');
+    }
+
+    async function postAnnouncement(titleId, bodyId, btnId) {
+        const title = document.getElementById(titleId).value.trim();
+        const body = document.getElementById(bodyId).value.trim();
+        if (!title || !body) return showToast('Please add a title and a message.', 'error');
+        const btn = document.getElementById(btnId);
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'postAnnouncement', userId:currentUser.id, subjectId: currentSubject.id, title, body, targetSections:'[]' });
+        btn.classList.remove('is-loading');
+        if (res.success) {
+            showToast('Announcement published to ' + currentSubject.title + ' 📢', 'success');
+            document.getElementById(titleId).value = '';
+            document.getElementById(bodyId).value = '';
+            invalidateCache();
+            loadTeacherData();
+        } else showToast(res.message || 'Failed to publish.', 'error');
+    }
+    async function deleteAnnouncement(id) {
+        if (!confirm('Delete this announcement?')) return;
+        const res = await apiCall({ action:'deleteAnnouncement', userId:currentUser.id, announcementId:id });
+        if (res.success) { showToast('Announcement deleted.', 'success'); invalidateCache(); loadTeacherData(); }
+        else showToast('Failed to delete.', 'error');
+    }
+    function openDeadlineModal(resourceId, currentIso) {
+        dlTargetId = resourceId;
+        document.getElementById('dl-input').value = currentIso ? currentIso.slice(0, 16) : '';
+        toggleDeadlineModal(true);
+    }
+    async function saveNewDeadline() {
+        const val = document.getElementById('dl-input').value;
+        if (!val || !dlTargetId) return showToast('Please pick a date and time.', 'error');
+        const btn = document.getElementById('dl-save');
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'extendDeadline', userId:currentUser.id, resourceId:dlTargetId, deadline:val });
+        btn.classList.remove('is-loading');
+        if (res.success) { showToast('Deadline updated ⏰', 'success'); toggleDeadlineModal(false); invalidateCache(); loadTeacherData(); }
+        else showToast(res.message || 'Failed to update deadline.', 'error');
+    }
+    async function deleteResource(resourceId, title) {
+        if (!confirm(`Delete "${title}"? Students will no longer see it.`)) return;
+        const res = await apiCall({ action:'deleteResource', userId:currentUser.id, resourceId:String(resourceId) });
+        if (res.success) { showToast('Resource deleted.', 'success'); invalidateCache(); loadTeacherData(); }
+        else showToast(res.message || 'Failed to delete resource.', 'error');
+    }
+
+    /* ---------- GRADEBOOK (enrolled students of the open subject) ---------- */
+    async function loadGradebook() {
+        const roster = teacherRosters[currentSubject.id] || [];
+        allStudents = roster.map(r => ({ id:r.userId, display_name:r.display_name, student_id:r.student_id, section:r.section }));
+        const gradeRes = await apiCall({ action:'fetchGrades', userId:currentUser.id, subjectId: currentSubject.id });
+        lastGrades = gradeRes.success ? gradeRes.grades : [];
+        renderGradebookStudents();
+        renderGradesTable(lastGrades);
+    }
+    function renderGradebookStudents() {
+        const term = document.getElementById('gb-term').value;
+        const sel = document.getElementById('gb-student');
+        const gradedIds = new Set(lastGrades.filter(g => g.term === term).map(g => String(g.userId)));
+        const pool = allStudents.filter(s => !gradedIds.has(String(s.id)));
+        sel.innerHTML = '<option value="">Select student…</option>' +
+            pool.map(s => `<option value="${s.id}">${escapeHtml_(s.display_name)}${s.student_id ? ' (' + escapeHtml_(s.student_id) + ')' : ''}${s.section ? ' · ' + escapeHtml_(s.section) : ''}</option>`).join('');
+        if (!pool.length) sel.innerHTML = `<option value="">${gradedIds.size ? 'All enrolled students graded for this term ✓' : 'No enrolled students yet'}</option>`;
+    }
+    function renderGradesTable(grades) {
+        lastGrades = grades;
+        const stuMap = Object.fromEntries(allStudents.map(s => [s.id, s]));
+        const rows = grades.map(g => ({ ...g, studentName: (stuMap[g.userId] || {}).display_name || g.studentName || g.userId,
+                                        section: (stuMap[g.userId] || {}).section || g.studentId || '' }));
+        const tbody = document.getElementById('grades-table');
+        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="ann-empty">No grades encoded yet.</td></tr>'; return; }
+        tbody.innerHTML = rows.map(g => `
+            <tr>
+                <td style="font-weight:600;">${escapeHtml_(g.studentName)}</td>
+                <td style="color:var(--text-p);">${escapeHtml_((stuMap[g.userId] || {}).student_id || '')}</td>
+                <td>${escapeHtml_(g.term)}</td>
+                <td><strong style="color:var(--accent); font-size:1.1rem;">${g.grade}</strong></td>
+                <td style="color:var(--text-p);">${escapeHtml_(g.remarks || '—')}</td>
+                <td style="color:#94a3b8; font-size:.8rem;">${new Date(g.updated_at).toLocaleString()}</td>
+                <td><button class="btn btn-danger-icon" style="padding:6px 12px; font-size:.75rem;" onclick="deleteGrade('${g.id}')"><i class="fas fa-trash"></i></button></td>
+            </tr>`).join('');
+    }
+    async function saveGrade() {
+        const studentId = document.getElementById('gb-student').value;
+        const term = document.getElementById('gb-term').value;
+        const grade = document.getElementById('gb-grade').value;
+        const remarks = document.getElementById('gb-remarks').value.trim();
+        if (!studentId) return showToast('Select a student.', 'error');
+        if (grade === '' || +grade < 0 || +grade > 100) return showToast('Enter a grade between 0 and 100.', 'error');
+        const btn = document.getElementById('gb-save');
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'saveGrade', userId:currentUser.id, subjectId: currentSubject.id, targetStudentId:studentId, term, grade:+grade, remarks });
+        btn.classList.remove('is-loading');
+        if (res.success) {
+            showToast('Grade saved — the student can now see it. 🎓', 'success');
+            document.getElementById('gb-grade').value = '';
+            document.getElementById('gb-remarks').value = '';
+            const stu = allStudents.find(s => s.id === studentId) || {};
+            lastGrades.push({ userId:studentId, term, grade:+grade, remarks, id:'local-' + Date.now(),
+                updated_at:new Date().toISOString(), studentName:stu.display_name || studentId, studentId:stu.student_id || '' });
+            renderGradebookStudents();
+            renderGradesTable(lastGrades);
+        } else showToast(res.message || 'Failed to save grade.', 'error');
+    }
+    async function deleteGrade(gradeId) {
+        if (!confirm('Delete this grade entry?')) return;
+        const res = await apiCall({ action:'deleteGrade', userId:currentUser.id, gradeId });
+        if (res.success) { showToast('Grade deleted.', 'success'); loadGradebook(); }
+        else showToast('Failed to delete.', 'error');
+    }
+
+    /* ---------- UPLOAD RESOURCE ---------- */
+    function openResourceModal() {
+        if (!currentSubject) return showToast('Open a subject first.', 'error');
+        buildSecPicker('res-sec-picker');
+        toggleModal(true);
+    }
+    function onTypeChange() {
+        document.getElementById('assignment-fields').classList.toggle('hidden', document.getElementById('res-type').value !== 'assignment');
+    }
+    async function handleResourceSubmission() {
+        const title = document.getElementById('res-title').value.trim();
+        const fileInput = document.getElementById('res-file').files[0];
+        const btn = document.getElementById('publish-btn');
+        if (!title) return showToast('Please enter a title', 'error');
+        btn.classList.add('is-loading');
+        const payload = {
+            action:'saveResource', userId:currentUser.id, subjectId: currentSubject.id,
+            title, type: document.getElementById('res-type').value,
+            url: document.getElementById('res-url').value.trim() || "",
+            submissionUrl: document.getElementById('res-submission-url').value.trim(),
+            targetSections: JSON.stringify(readSecPicker('res-sec-picker')),
+            deadline: document.getElementById('res-deadline').value,
+            instructions: (document.getElementById('res-instructions').value || '').trim()
+        };
+        if (fileInput) {
+            if (fileInput.size > 8 * 1024 * 1024) { btn.classList.remove('is-loading'); return showToast('File too large — max 8 MB. Use a Drive link instead.', 'error'); }
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                payload.fileData = e.target.result; payload.fileName = fileInput.name; payload.fileMime = fileInput.type;
+                await sendResource(payload, btn);
+            };
+            reader.readAsDataURL(fileInput);
+        } else await sendResource(payload, btn);
+    }
+    async function sendResource(payload, btn) {
+        const res = await apiCall(payload);
+        btn.classList.remove('is-loading');
+        if (res.success) {
+            showToast('Resource successfully saved!', 'success');
+            toggleModal(false);
+            ['res-title','res-url','res-file','res-deadline','res-instructions','res-submission-url'].forEach(id => document.getElementById(id).value = '');
+            buildSecPicker('res-sec-picker');
+            onTypeChange();
+            invalidateCache();
+            loadTeacherData();
+        } else showToast(res.message || 'Save failed — check the console.', 'error');
+    }
+
+    /* ---------- FORGOT PASSWORD ---------- */
+    function showForgot() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('forgot-form').classList.remove('hidden');
+    }
+    function closeForgot() { document.getElementById('forgot-form').classList.add('hidden'); toggleAuth('login'); }
+    async function sendReset() {
+        const email = document.getElementById('forgot-email').value.trim();
+        if (!email) return showToast('Please enter your email.', 'error');
+        const btn = document.getElementById('forgot-submit');
+        btn.classList.add('is-loading');
+        const res = await apiCall({ action:'resetPassword', email });
+        btn.classList.remove('is-loading');
+        showToast(res.success ? 'If that account exists, a reset notice has been sent.' : 'Could not send reset right now.', res.success ? 'success' : 'error');
+        if (res.success) { document.getElementById('forgot-email').value = ''; closeForgot(); }
+    }
+
+    /* ---------- THEME / EYES / STRENGTH / REMEMBER ---------- */
+    const THEME_KEY = "tdc_theme";
+    function applyTheme(t) {
+        document.documentElement.setAttribute("data-theme", t);
+        document.querySelectorAll(".theme-toggle i").forEach(ic => ic.className = t === "dark" ? "fas fa-sun" : "fas fa-moon");
+        try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+    }
+    (function initTheme() {
+        let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+        applyTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+        document.querySelectorAll(".theme-toggle, #auth-theme-toggle").forEach(b =>
+            b.addEventListener("click", () =>
+                applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark")));
+    })();
+    document.querySelectorAll(".eye-toggle").forEach(btn => btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.eye);
+        const show = input.type === "password";
+        input.type = show ? "text" : "password";
+        btn.innerHTML = show ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    }));
+    document.getElementById("reg-password").addEventListener("input", e => {
+        const p = e.target.value;
+        let s = 0;
+        if (p.length >= 8) s++;
+        if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+        if (/\d/.test(p)) s++;
+        if (/[^A-Za-z0-9]/.test(p)) s++;
+        const colors = ["#ef4444","#f59e0b","#eab308","#10b981"], labels = ["Weak","Fair","Good","Strong"];
+        document.querySelectorAll("#strength-bars i").forEach((seg, i) => seg.style.background = (p && i < s) ? colors[s-1] : "");
+        document.getElementById("strength-label").textContent = p ? `Password strength: ${labels[Math.max(s-1,0)]}` : "Password strength";
+    });
+    (function initRemember() {
+        try {
+            const saved = localStorage.getItem('tdc_remember_email');
+            if (saved) { document.getElementById('login-email').value = saved; document.getElementById('remember-me').checked = true; }
+        } catch (e) {}
+    })();
+    document.getElementById("login-password").addEventListener("keydown", e => { if (e.key === "Enter") signIn(); });
+    document.getElementById("login-email").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("login-password").focus(); });
+    document.getElementById("enroll-code").addEventListener("keydown", e => { if (e.key === "Enter") enrollWithCode(); });
+
+    /* ---------- BOOT ---------- */
+    const savedUser = sessionStorage.getItem(SESSION_KEY);
+    if (savedUser) { openPortal(JSON.parse(savedUser)); }
+    else { bootDone('Welcome!'); setReady('ready','Ready ✓'); }
+</script>
+</body>
+</html>
