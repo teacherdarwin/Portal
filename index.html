@@ -677,11 +677,11 @@
         <button onclick="toggleMobileMenu()" aria-label="Menu" style="background:transparent; border:none; color:#fff; font-size:1.3rem; cursor:pointer; padding:6px;"><i class="fas fa-bars" id="hamburger-icon"></i></button>
     </div>
     <div id="mobile-menu-student" class="mobile-nav-menu">
-        <button class="nav-link" id="m-nav-dashboard" onclick="showTab('dashboard'); toggleMobileMenu();"><i class="fas fa-house-chimney"></i> Dashboard</button>
-        <button class="nav-link" id="m-nav-classrooms" onclick="showTab('classrooms'); toggleMobileMenu();"><i class="fas fa-chalkboard-user"></i> My Classrooms</button>
-        <button class="nav-link" id="m-nav-modules" onclick="showTab('modules'); toggleMobileMenu();"><i class="fas fa-book-open"></i> Curriculum</button>
-        <button class="nav-link" id="m-nav-assignments" onclick="showTab('assignments'); toggleMobileMenu();"><i class="fas fa-clipboard-list"></i> Assignments</button>
-        <button class="nav-link" id="m-nav-grades" onclick="showTab('grades'); toggleMobileMenu();"><i class="fas fa-graduation-cap"></i> My Grades</button>
+        <button class="nav-link active" id="m-nav-classrooms" onclick="showTab('classrooms'); toggleMobileMenu();"><i class="fas fa-chalkboard-user"></i> Classrooms</button>
+        <button class="nav-link hidden" id="m-nav-dashboard" onclick="showTab('classrooms'); toggleMobileMenu();"><i class="fas fa-house-chimney"></i> Dashboard</button>
+        <button class="nav-link hidden" id="m-nav-modules" onclick="showTab('modules'); toggleMobileMenu();"><i class="fas fa-book-open"></i> Curriculum</button>
+        <button class="nav-link hidden" id="m-nav-assignments" onclick="showTab('assignments'); toggleMobileMenu();"><i class="fas fa-clipboard-list"></i> Assignments</button>
+        <button class="nav-link hidden" id="m-nav-grades" onclick="showTab('grades'); toggleMobileMenu();"><i class="fas fa-graduation-cap"></i> My Grades</button>
         <button class="nav-link install-btn" onclick="triggerInstall(); toggleMobileMenu();"><i class="fas fa-mobile-screen-button"></i> Install app</button>
         <button class="nav-link" style="color:#ef4444; margin-top:10px; border-top:1px solid rgba(255,255,255,.1); padding-top:14px;" onclick="signOut()"><i class="fas fa-arrow-right-from-bracket"></i> Sign Out</button>
     </div>
@@ -702,17 +702,17 @@
     <aside class="sidebar">
         <div class="sidebar-brand"><img src="assets/logo-96.png" alt="NCC seal"><span>MathClass</span></div>
         <nav style="flex:1">
-            <button class="nav-link active" id="nav-dashboard" onclick="showTab('dashboard')"><i class="fas fa-house-chimney"></i> Dashboard</button>
-            <button class="nav-link" id="nav-classrooms" onclick="showTab('classrooms')"><i class="fas fa-chalkboard-user"></i> My Classrooms</button>
+            <button class="nav-link active" id="nav-classrooms" onclick="showTab('classrooms')"><i class="fas fa-chalkboard-user"></i> Classrooms</button>
             <div id="nav-room-sub" class="nav-sub-group hidden">
-                <button class="nav-sub" data-rpane="overview" onclick="clGoPane('overview')"><i class="fas fa-house-chimney"></i> Class Dashboard</button>
+                <button class="nav-sub" data-rpane="overview" onclick="clGoPane('overview')"><i class="fas fa-house-chimney"></i> Dashboard</button>
                 <button class="nav-sub" data-rpane="modules" onclick="clGoPane('modules')"><i class="fas fa-book-open"></i> Curriculum</button>
                 <button class="nav-sub" data-rpane="assignments" onclick="clGoPane('assignments')"><i class="fas fa-clipboard-list"></i> Assignments</button>
                 <button class="nav-sub" data-rpane="grades" onclick="clGoPane('grades')"><i class="fas fa-graduation-cap"></i> My Grades</button>
             </div>
-            <button class="nav-link" id="nav-modules" onclick="showTab('modules')"><i class="fas fa-book-open"></i> Curriculum</button>
-            <button class="nav-link" id="nav-assignments" onclick="showTab('assignments')"><i class="fas fa-clipboard-list"></i> Assignments</button>
-            <button class="nav-link" id="nav-grades" onclick="showTab('grades')"><i class="fas fa-graduation-cap"></i> My Grades</button>
+            <button class="nav-link hidden" id="nav-dashboard" onclick="showTab('classrooms')"><i class="fas fa-house-chimney"></i> Dashboard</button>
+            <button class="nav-link hidden" id="nav-modules" onclick="showTab('modules')"><i class="fas fa-book-open"></i> Curriculum</button>
+            <button class="nav-link hidden" id="nav-assignments" onclick="showTab('assignments')"><i class="fas fa-clipboard-list"></i> Assignments</button>
+            <button class="nav-link hidden" id="nav-grades" onclick="showTab('grades')"><i class="fas fa-graduation-cap"></i> My Grades</button>
         </nav>
         <div style="padding-top:20px; border-top:1px solid rgba(255,255,255,.1);">
             <div style="margin-bottom:20px; padding:0 12px;">
@@ -806,7 +806,7 @@
                 <div id="crs-stats" class="cl-stats"></div>
 
                 <div class="cl-subtabs">
-                    <button class="cl-subtab active" data-pane="overview" onclick="clSetPaneS('overview')"><i class="fas fa-house-chimney"></i>Overview</button>
+                    <button class="cl-subtab active" data-pane="overview" onclick="clSetPaneS('overview')"><i class="fas fa-house-chimney"></i>Dashboard</button>
                     <button class="cl-subtab" data-pane="modules" onclick="clSetPaneS('modules')"><i class="fas fa-book"></i>Curriculum</button>
                     <button class="cl-subtab" data-pane="assignments" onclick="clSetPaneS('assignments')"><i class="fas fa-clipboard-list"></i>Assignments</button>
                     <button class="cl-subtab" data-pane="grades" onclick="clSetPaneS('grades')"><i class="fas fa-graduation-cap"></i>My Grades</button>
@@ -1064,28 +1064,20 @@
 
         <div id="tab-gradebook" class="tab-content hidden">
             <div class="card" style="margin-bottom:24px;">
-                <h3 style="margin-bottom:16px;"><i class="fas fa-pen-to-square" style="color:var(--accent); margin-right:8px;"></i>Encode a Grade</h3>
-                <div class="gb-form">
-                    <div class="input-field"><label>Section</label><select id="gb-section" onchange="renderGradebookStudents()"><option value="">All sections</option></select></div>
-                    <div class="input-field"><label>Student</label><select id="gb-student"><option value="">Loading students…</option></select></div>
-                    <div class="input-field"><label>Term</label><select id="gb-term" onchange="renderGradebookStudents()"><option>Prelims</option><option>Midterms</option><option>Semi-Finals</option><option>Finals</option></select></div>
-                    <div class="input-field"><label>Grade</label><input type="number" id="gb-grade" min="0" max="100" step="0.01" placeholder="0–100"></div>
-                    <div class="input-field"><label>Remarks (optional)</label><input type="text" id="gb-remarks" placeholder="e.g., Very good"></div>
-                    <button class="btn btn-primary" id="gb-save" onclick="saveGrade()"><i class="fas fa-floppy-disk"></i> Save</button>
+                <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap;">
+                    <div class="input-field" style="min-width:210px; margin:0;">
+                        <label>Section</label>
+                        <select id="gb-section" onchange="renderGradebookGrid()"><option value="">All sections</option></select>
+                    </div>
+                    <button class="btn btn-ghost" style="padding:11px 16px; font-size:.82rem;" onclick="loadGradebook()"><i class="fas fa-rotate"></i> Refresh</button>
+                    <button class="btn btn-ghost" style="padding:11px 16px; font-size:.82rem;" onclick="exportGradesCsv()"><i class="fas fa-file-csv"></i> Export CSV</button>
                 </div>
-                <p style="font-size:.72rem; color:#94a3b8;">Students already graded for the selected term are hidden from the dropdown. Grades are stored exactly as typed.</p>
+                <p style="font-size:.72rem; color:#94a3b8; margin-top:12px;">One row per student, one column per term. Type the grade straight into the table — it saves when you leave the box, and the General Average is computed for you.</p>
             </div>
+            <div id="gb-summary" class="cl-stats"></div>
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:16px;">
-                    <h3 style="margin:0;">Recorded Grades</h3>
-                    <button class="btn btn-ghost" style="padding:10px 16px; font-size:.82rem;" onclick="exportGradesCsv()"><i class="fas fa-file-csv"></i> Export CSV</button>
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead><tr><th>Student</th><th>Student ID</th><th>Section</th><th>Term</th><th>Grade</th><th>Remarks</th><th>Last Updated</th><th></th></tr></thead>
-                        <tbody id="grades-table"><tr><td colspan="8" class="ann-empty">No grades encoded yet.</td></tr></tbody>
-                    </table>
-                </div>
+                <h3 style="margin-bottom:14px;">Grade sheet</h3>
+                <div id="gb-grid"></div>
             </div>
         </div>
 
@@ -1533,7 +1525,7 @@
     /* ---------- STUDENT TABS ---------- */
     function showTab(tabName) {
         closeMobileMenu();
-        const titles = { dashboard:'Dashboard', classrooms:'My Classrooms', modules:'Learning Modules', assignments:'Assignments', grades:'My Grades' };
+        const titles = { dashboard:'Dashboard', classrooms:'Classrooms', modules:'Learning Modules', assignments:'Assignments', grades:'My Grades' };
         document.getElementById('tab-title').innerText = titles[tabName];
         document.querySelectorAll('#portal-student .tab-content').forEach(t => t.classList.add('hidden'));
         document.querySelectorAll('#portal-student .sidebar .nav-link').forEach(l => l.classList.remove('active'));
@@ -1595,7 +1587,9 @@
                         <button class="btn btn-danger-icon" style="padding:7px 12px; font-size:.75rem;" onclick="deleteAnnouncement('${a.id}')"><i class="fas fa-trash"></i> Delete</button>
                     ` : ''}
                 </div>
+                <div class="ann-social" data-ann="${a.id}"></div>
             </div>`).join('');
+        if (typeof portalSocialMount === 'function') portalSocialMount(boxId, anns);
     }
 
     function deadlineBadge(deadlineIso) {
@@ -1945,7 +1939,9 @@
         else showToast(res.message || 'Failed to update deadline.', 'error');
     }
 
-    /* ---------- GRADEBOOK ---------- */
+    /* ---------- GRADEBOOK — one row per student, one column per term ---------- */
+    const GB_TERMS = ['Prelims', 'Midterms', 'Semi-Finals', 'Finals'];
+
     async function loadGradebook() {
         const [stuRes, gradeRes] = await Promise.all([
             apiCall({ action: 'fetchStudents', userId: currentUser.id }),
@@ -1956,84 +1952,110 @@
         const found = [...new Set(allStudents.map(s => s.section).filter(Boolean))];
         const extras = found.filter(s => !SECTIONS.includes(s));
         const secSel = document.getElementById('gb-section');
-        const prev = secSel.value;
-        secSel.innerHTML = '<option value="">All sections</option>' +
-            SECTIONS.concat(extras).map(s => `<option value="${escapeHtml_(s)}">${escapeHtml_(s)}</option>`).join('');
-        if (prev) secSel.value = prev;
-        renderGradebookStudents();
-        renderGradesTable(lastGrades);
-    }
-
-    function renderGradebookStudents() {
-        const sec = document.getElementById('gb-section').value;
-        const term = document.getElementById('gb-term').value;
-        const sel = document.getElementById('gb-student');
-        const gradedIds = new Set(lastGrades.filter(g => g.term === term).map(g => String(g.userId)));
-        const pool = (sec ? allStudents.filter(s => s.section === sec) : allStudents)
-            .filter(s => !gradedIds.has(String(s.id)));
-        sel.innerHTML = '<option value="">Select student…</option>' +
-            pool.map(s => `<option value="${s.id}">${escapeHtml_(s.display_name)}${s.student_id ? ' (' + escapeHtml_(s.student_id) + ')' : ''}${s.section ? ' · ' + escapeHtml_(s.section) : ''}</option>`).join('');
-        if (!pool.length) {
-            sel.innerHTML = `<option value="">${gradedIds.size ? 'All students here are graded for this term ✓' : 'No students found'}</option>`;
+        if (secSel) {
+            const prev = secSel.value;
+            secSel.innerHTML = '<option value="">All sections</option>' +
+                SECTIONS.concat(extras).map(s => `<option value="${escapeHtml_(s)}">${escapeHtml_(s)}</option>`).join('');
+            if (prev) secSel.value = prev;
         }
+        renderGradebookGrid();
     }
 
-    function renderGradesTable(grades) {
-        lastGrades = grades;
-        const sec = document.getElementById('gb-section').value;
-        const stuMap = Object.fromEntries(allStudents.map(s => [s.id, s]));
-        const rows = grades
-            .map(g => ({ ...g, section: (stuMap[g.userId] || {}).section || '' }))
-            .filter(g => !sec || g.section === sec);
-        const tbody = document.getElementById('grades-table');
-        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="ann-empty">No grades encoded yet.</td></tr>'; return; }
-        tbody.innerHTML = rows.map(g => `
-            <tr>
-                <td style="font-weight:600;">${escapeHtml_(g.studentName || g.userId)}</td>
-                <td style="color:var(--text-p);">${escapeHtml_(g.studentId || '')}</td>
-                <td><span class="sec-chip"><i class="fas fa-users-rectangle"></i> ${escapeHtml_(g.section || '—')}</span></td>
-                <td>${escapeHtml_(g.term)}</td>
-                <td><strong style="color:var(--accent); font-size:1.1rem;">${g.grade}</strong></td>
-                <td style="color:var(--text-p);">${escapeHtml_(g.remarks || '—')}</td>
-                <td style="color:#94a3b8; font-size:.8rem;">${new Date(g.updated_at).toLocaleString()}</td>
-                <td><button class="btn btn-danger-icon" style="padding:6px 12px; font-size:.75rem;" onclick="deleteGrade('${g.id}')"><i class="fas fa-trash"></i></button></td>
-            </tr>`).join('');
+    function gbEntry(studentId, term) {
+        return lastGrades.filter(g => String(g.userId) === String(studentId) && String(g.term) === String(term))[0] || null;
     }
 
-    async function saveGrade() {
-        const studentId = document.getElementById('gb-student').value;
-        const term = document.getElementById('gb-term').value;
-        const grade = document.getElementById('gb-grade').value;
-        const remarks = document.getElementById('gb-remarks').value.trim();
-        if (!studentId) return showToast('Select a student.', 'error');
-        if (grade === '' || +grade < 0 || +grade > 100) return showToast('Enter a grade between 0 and 100.', 'error');
-        const btn = document.getElementById('gb-save');
-        btn.classList.add('is-loading');
-        const res = await apiCall({ action: 'saveGrade', userId: currentUser.id, targetStudentId: studentId, term, grade: +grade, remarks });
-        btn.classList.remove('is-loading');
-        if (res.success) {
-            showToast('Grade saved — the student can now see it. 🎓', 'success');
-            document.getElementById('gb-grade').value = '';
-            document.getElementById('gb-remarks').value = '';
-            const stu = allStudents.find(s => s.id === studentId) || {};
-            lastGrades.push({
-                userId: studentId, term, grade: +grade, remarks,
-                id: 'local-' + Date.now(),
-                updated_at: new Date().toISOString(),
-                studentName: stu.display_name || studentId,
-                studentId: stu.student_id || ''
-            });
-            renderGradebookStudents();
-            renderGradesTable(lastGrades);
-            loadGradebook();
-        } else showToast(res.message || 'Failed to save grade.', 'error');
+    function gbAverage(studentId) {
+        const nums = GB_TERMS.map(t => { const e = gbEntry(studentId, t); return e ? Number(e.grade) : NaN; }).filter(n => !isNaN(n));
+        return nums.length ? nums.reduce((s, n) => s + n, 0) / nums.length : NaN;
     }
 
-    async function deleteGrade(gradeId) {
-        if (!confirm('Delete this grade entry?')) return;
-        const res = await apiCall({ action: 'deleteGrade', userId: currentUser.id, gradeId });
-        if (res.success) { showToast('Grade deleted.', 'success'); loadGradebook(); }
-        else showToast('Failed to delete.', 'error');
+    function renderGradebookGrid() {
+        const box = document.getElementById('gb-grid');
+        if (!box) return;
+        const secSel = document.getElementById('gb-section');
+        const sec = secSel ? secSel.value : '';
+        const students = allStudents
+            .filter(s => !sec || s.section === sec)
+            .sort((a, b) => String(a.section || '').localeCompare(String(b.section || '')) ||
+                            String(a.display_name || '').localeCompare(String(b.display_name || '')));
+
+        const nums = lastGrades.map(g => Number(g.grade)).filter(n => !isNaN(n));
+        const avg = nums.length ? nums.reduce((s, n) => s + n, 0) / nums.length : NaN;
+        const passing = nums.filter(n => n >= 75).length;
+        const sum = document.getElementById('gb-summary');
+        if (sum) sum.innerHTML =
+            `<div class="cl-stat"><span>Class average</span><strong>${isNaN(avg) ? '—' : Math.round(avg * 100) / 100}</strong></div>
+             <div class="cl-stat"><span>Passing</span><strong>${nums.length ? Math.round(100 * passing / nums.length) + '%' : '—'}</strong></div>
+             <div class="cl-stat"><span>Grades recorded</span><strong>${nums.length}</strong></div>
+             <div class="cl-stat"><span>Students${sec ? ' · ' + escapeHtml_(sec) : ''}</span><strong>${students.length}</strong></div>`;
+
+        if (!students.length) {
+            box.innerHTML = '<div class="ann-empty">No students found' + (sec ? ' in ' + escapeHtml_(sec) : '') + ' yet.</div>';
+            return;
+        }
+
+        box.innerHTML = `<div class="table-responsive"><table class="gb-grid">
+            <thead><tr><th>Student</th><th>ID</th><th>Section</th>${GB_TERMS.map(t => `<th>${t}</th>`).join('')}<th>General Average</th></tr></thead>
+            <tbody>${students.map(s => {
+                const a = gbAverage(s.id);
+                return `<tr>
+                    <td class="gb-name">${escapeHtml_(s.display_name || '')}</td>
+                    <td class="gb-id">${escapeHtml_(s.student_id || '—')}</td>
+                    <td><span class="sec-chip">${escapeHtml_(s.section || '—')}</span></td>
+                    ${GB_TERMS.map(t => {
+                        const e = gbEntry(s.id, t);
+                        return `<td class="gb-cell"><input class="gb-in" type="number" inputmode="decimal" min="0" max="100" step="0.01"
+                            value="${e ? e.grade : ''}" data-uid="${s.id}" data-term="${t}" placeholder="—"
+                            onchange="saveGradeCell(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"></td>`;
+                    }).join('')}
+                    <td class="gb-avg" data-avg="${s.id}">${isNaN(a) ? '—' : Math.round(a * 100) / 100}</td>
+                </tr>`;
+            }).join('')}</tbody></table></div>
+            <p style="font-size:.72rem; color:#94a3b8; margin-top:10px;">Rows follow section, then name. Empty a box and leave it to remove that grade.</p>`;
+    }
+
+    async function saveGradeCell(input) {
+        const uid = input.dataset.uid;
+        const term = input.dataset.term;
+        const raw = String(input.value || '').trim();
+        const cell = input.closest('td');
+        const existing = gbEntry(uid, term);
+        if (cell) cell.classList.add('is-dirty');
+
+        if (!raw) {
+            if (!existing) { if (cell) cell.classList.remove('is-dirty'); return; }
+            const del = await apiCall({ action: 'deleteGrade', userId: currentUser.id, gradeId: existing.id });
+            if (cell) cell.classList.remove('is-dirty');
+            if (!del.success) { input.value = existing.grade; return showToast(del.message || 'Could not remove that grade.', 'error'); }
+            showToast('Grade removed.', 'success');
+            await loadGradebook();
+            return;
+        }
+
+        const value = Number(raw);
+        if (isNaN(value) || value < 0 || value > 100) {
+            if (cell) cell.classList.remove('is-dirty');
+            showToast('Grades must be between 0 and 100.', 'error');
+            input.value = existing ? existing.grade : '';
+            return;
+        }
+        if (existing && Number(existing.grade) === value) { if (cell) cell.classList.remove('is-dirty'); return; }
+
+        /* the original service keeps one entry per student + term, so replace it */
+        if (existing && String(existing.id).indexOf('local-') !== 0) {
+            const del = await apiCall({ action: 'deleteGrade', userId: currentUser.id, gradeId: existing.id });
+            if (!del.success) {
+                if (cell) cell.classList.remove('is-dirty');
+                input.value = existing.grade;
+                return showToast(del.message || 'Could not update that grade.', 'error');
+            }
+        }
+        const res = await apiCall({ action: 'saveGrade', userId: currentUser.id, targetStudentId: uid, term, grade: value, remarks: existing ? (existing.remarks || '') : '' });
+        if (cell) cell.classList.remove('is-dirty');
+        if (!res.success) return showToast(res.message || 'Could not save that grade.', 'error');
+        showToast('Grade saved — the student can see it now. 🎓', 'success');
+        await loadGradebook();
     }
 
     /* ---------- UPLOAD — v8: single path via apiCall, action included, errors surfaced ---------- */
@@ -2852,7 +2874,8 @@
             box.innerHTML = clEmpty(escapeHtml_(res.message || 'Could not load your classrooms.'));
             return;
         }
-        clList = res.classrooms || [];
+        clList = (res.classrooms || []).filter(c =>
+            !c.teacherId || String(c.teacherId) === String(currentUser.id));
         renderClList();
     }
 
@@ -3171,7 +3194,7 @@
         }
 
         box.innerHTML = `<div class="table-responsive"><table class="gb-grid">
-            <thead><tr><th>Student</th><th>ID</th>${CL_TERMS.map(t => `<th>${escapeHtml_(t)}</th>`).join('')}<th>Average</th></tr></thead>
+            <thead><tr><th>Student</th><th>ID</th>${CL_TERMS.map(t => `<th>${escapeHtml_(t)}</th>`).join('')}<th>General Average</th></tr></thead>
             <tbody>${students.map(({ m, avg: a }) => `<tr>
                 <td class="gb-name">${escapeHtml_(fmtName_(m.name))}</td>
                 <td class="gb-id">${escapeHtml_(m.student_id || '—')}</td>
@@ -3227,7 +3250,7 @@
 
     function exportClassGradesCsv() {
         if (!clMembers.length) return showToast('There is nobody to export yet.', 'error');
-        const rows = [['Student', 'Student ID', 'Section'].concat(CL_TERMS).concat(['Average'])];
+        const rows = [['Student', 'Student ID', 'Section'].concat(CL_TERMS).concat(['General Average'])];
         clMembers.forEach(m => {
             const line = [fmtName_(m.name), m.student_id || '', m.section || ''];
             CL_TERMS.forEach(t => { const v = clGradeOf(m.userId, t); line.push(isNaN(v) ? '' : v); });
@@ -3419,6 +3442,21 @@
         $id('crs-anns').innerHTML = clAnns.length
             ? clAnns.map(a => annCardHTML(a, 'student')).join('')
             : clEmpty('No announcements in this classroom yet.');
+
+        /* school-wide announcements live inside each classroom dashboard */
+        const annHost = $id('crs-anns');
+        if (annHost && annHost.closest('.card') && !$id('crs-school-anns')) {
+            const wrap = document.createElement('div');
+            wrap.className = 'card';
+            wrap.style.marginBottom = '20px';
+            wrap.innerHTML = '<h3 style="margin-bottom:6px;"><i class="fas fa-bullhorn" style="color:#ea580c; margin-right:8px;"></i>School announcements</h3>'
+                + '<p class="muted" style="margin-bottom:14px;">From your teachers — react or leave a comment below.</p>'
+                + '<div id="crs-school-anns"></div>';
+            annHost.closest('.card').insertAdjacentElement('beforebegin', wrap);
+        }
+        if ($id('crs-school-anns')) {
+            renderAnnouncements('crs-school-anns', (typeof lastStudentAnns !== 'undefined' && lastStudentAnns) ? lastStudentAnns : [], false);
+        }
     }
 
     function renderClModulesS() {
@@ -3531,6 +3569,90 @@
                 <div class="band ${band.cls}">${band.label}</div>
                 <div class="bar"><i style="width:${isNaN(avgNum) ? 0 : avgNum}%"></i></div>
             </div>`;
+    }
+
+    /* ============ reactions + comments on the main (school-wide) announcements ============ */
+    const portalSocialLists = {};
+    let portalSocialData = { reactions: {}, comments: {} };
+
+    function portalSocialMount(boxId, anns) {
+        portalSocialLists[boxId] = anns || [];
+        portalSocialPaint(boxId);
+        if (!classReady() || !(anns || []).length) return;
+        apiClass({ action: 'portalAnnouncementSocial', userId: (currentUser || {}).id })
+            .then(res => {
+                if (!res || !res.success) return;
+                portalSocialData = { reactions: res.reactions || {}, comments: res.comments || {} };
+                portalSocialPaint(boxId);
+            })
+            .catch(() => {});
+    }
+
+    function portalSocialPaint(boxId) {
+        const box = document.getElementById(boxId);
+        if (!box) return;
+        (portalSocialLists[boxId] || []).forEach(a => {
+            const host = box.querySelector('.ann-social[data-ann="' + String(a.id).replace(/["'\\]/g, '') + '"]');
+            if (host) host.innerHTML = portalReactionsHTML(a.id) + portalCommentsHTML(a.id);
+        });
+    }
+
+    function portalReactionsHTML(id) {
+        const mine = portalSocialData.reactions[String(id)] || {};
+        return `<div class="react-row">${clReactionSet.map(e => {
+            const s = mine[e] || { count: 0, mine: false };
+            return `<button type="button" class="react${s.mine ? ' on' : ''}" title="React" onclick="reactPortalAnn('${jsArg_(String(id))}','${e}')">${e}${s.count ? `<span>${s.count}</span>` : ''}</button>`;
+        }).join('')}</div>`;
+    }
+
+    function portalCommentsHTML(id) {
+        const list = portalSocialData.comments[String(id)] || [];
+        const me = String((currentUser || {}).id || '');
+        return `<div class="cmt-wrap">
+            ${list.length ? list.map(c => `<div class="cmt">
+                <div class="cmt-head">
+                    <strong>${escapeHtml_(fmtName_(c.name))}</strong>
+                    <span>${new Date(c.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                    ${String(c.userId) === me ? `<button type="button" class="cmt-del" title="Delete comment" onclick="delPortalComment('${jsArg_(String(id))}','${jsArg_(String(c.id))}')"><i class="fas fa-xmark"></i></button>` : ''}
+                </div>
+                <p>${escapeHtml_(c.body)}</p>
+            </div>`).join('') : '<p class="cmt-none">No comments yet — be the first.</p>'}
+            <div class="cmt-form">
+                <input type="text" id="pcmt-${escapeHtml_(String(id))}" maxlength="600" placeholder="Write a comment…" onkeydown="if(event.key==='Enter'){commentPortalAnn('${jsArg_(String(id))}');}">
+                <button type="button" class="btn btn-primary" onclick="commentPortalAnn('${jsArg_(String(id))}')"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>`;
+    }
+
+    async function reactPortalAnn(id, emoji) {
+        const res = await apiClass({ action: 'reactToPortalAnnouncement', userId: (currentUser || {}).id, announcementId: id, emoji: emoji });
+        if (!res.success) return showToast(res.message || 'Could not react.', 'error');
+        portalSocialData.reactions = res.reactions || {};
+        portalSocialPaintAll();
+    }
+
+    async function commentPortalAnn(id) {
+        const input = $id('pcmt-' + id);
+        const body = input ? String(input.value || '').trim() : '';
+        if (!body) return;
+        const res = await apiClass({
+            action: 'commentOnPortalAnnouncement', userId: (currentUser || {}).id,
+            announcementId: id, body: body, name: (currentUser || {}).display_name || ''
+        });
+        if (!res.success) return showToast(res.message || 'Could not post the comment.', 'error');
+        portalSocialData.comments = res.comments || {};
+        portalSocialPaintAll();
+    }
+
+    async function delPortalComment(id, commentId) {
+        const res = await apiClass({ action: 'deletePortalComment', userId: (currentUser || {}).id, commentId: commentId });
+        if (!res.success) return showToast(res.message || 'Could not delete the comment.', 'error');
+        portalSocialData.comments = res.comments || {};
+        portalSocialPaintAll();
+    }
+
+    function portalSocialPaintAll() {
+        Object.keys(portalSocialLists).forEach(k => portalSocialPaint(k));
     }
 
     /* ---------- BOOT ---------- */

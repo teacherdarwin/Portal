@@ -70,7 +70,7 @@ If you skip this, everything else still works and the Classrooms tab simply show
 When you change `index.html`, also bump the first line of `sw.js`:
 
 ```js
-const VERSION = 'v10.0.0';   →   const VERSION = 'v10.1.0';
+const VERSION = 'v10.3.0';   →   const VERSION = 'v10.4.0';
 ```
 
 Installed phones then show a small "A new version is ready — Reload" bar and update in

@@ -63,6 +63,10 @@ That's it. The **Classrooms** tab appears for you and **My Classrooms** appears 
 **You (teacher)**
 1. **Classrooms → New classroom** → class name, subject, section.
 2. A 6-character code is generated (e.g. `MATH7B`). Tap **Copy** and post it to the class.
+2b. The student's main screen is the list of classrooms. Opening one shows its
+    Dashboard, Curriculum, Assignments and My Grades in the menu.
+2c. A teacher only ever sees the classrooms they created themselves.
+
 3. Inside the classroom: **Resources**, **Announcements**, **Members**, **Grades**,
    **Submissions**. The grade sheet shows every enrolled student, one row each, with a
    column per term — pick a section from the dropdown and type the grade straight in.
@@ -75,7 +79,8 @@ That's it. The **Classrooms** tab appears for you and **My Classrooms** appears 
    Assignments and My Grades — with the same look as the main portal.
 3. Resources are listed **in the order you uploaded them** (numbered 1, 2, 3…).
 4. They can **react to** (👍 ❤️ 😂 😮 👏) and **comment on** announcements; you can delete
-   any comment from the classroom.
+   any comment from the classroom. The same reactions and comments also work on the
+   school-wide announcements on every student's Dashboard.
 
 ## Submission folders (automatic)
 

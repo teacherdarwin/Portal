@@ -4,7 +4,7 @@
    - never caches the Apps Script API (POST requests always go to the network)
    Bump VERSION whenever index.html or the assets change.
    ========================================================================= */
-const VERSION = 'v10.1.0';
+const VERSION = 'v10.3.0';
 const SHELL_CACHE = 'mathclass-shell-' + VERSION;
 const RUNTIME_CACHE = 'mathclass-runtime';
 
